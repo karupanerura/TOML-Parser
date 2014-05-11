@@ -1,0 +1,3 @@
+name = "TOML-Parser"
+# badges = ["travis"]
+authority="cpan:KARUPA"
