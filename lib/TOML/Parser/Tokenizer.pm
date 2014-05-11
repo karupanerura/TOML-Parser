@@ -50,24 +50,28 @@ sub _tokenize {
     until (/\G\z/mgco) {
         if (/\G#(.+)/mgco) {
             warn "[TOKEN] COMMENT: $1" if DEBUG;
+            $class->_skip_whitespace();
             push @tokens => [TOKEN_COMMENT, pos, $1];
         }
         elsif (/\G\[\[([^.\s\\\]]+(?:\.[^.\s\\\]]+)*)\]\]/mgco) {
             warn "[TOKEN] ARRAY_OF_TABLE: $1" if DEBUG;
+            $class->_skip_whitespace();
             push @tokens => [TOKEN_ARRAY_OF_TABLE, pos, $1];
         }
         elsif (/\G\[([^.\s\\\]]+(?:\.[^.\s\\\]]+)*)\]/mgco) {
             warn "[TOKEN] TABLE: $1" if DEBUG;
+            $class->_skip_whitespace();
             push @tokens => [TOKEN_TABLE, pos, $1];
         }
         elsif (/\G([^.\s\\\]]+)\s*=/mgco) {
             warn "[TOKEN] KEY: $1" if DEBUG;
+            $class->_skip_whitespace();
             push @tokens => [TOKEN_KEY, pos, $1];
             push @tokens => $class->_tokenize_value();
         }
         elsif (/\G\s+/mgco) {
-            # pass throughw
-            warn "[PASS] WHITESPACE" if DEBUG;
+            # pass through
+            $class->_skip_whitespace();
         }
         else {
             $class->_syntax_error();
@@ -78,37 +82,41 @@ sub _tokenize {
 
 sub _tokenize_value {
     my $class = shift;
-    if (/\G\s+/smgco) {
-        # pass through
-        warn "[PASS] WHITESPACE" if DEBUG;
-    }
+    warn "[CALL] _tokenize_value" if DEBUG;
 
     if (/\G#(.+)/mgco) {
         warn "[TOKEN] COMMENT: $1" if DEBUG;
+        $class->_skip_whitespace();
         return [TOKEN_COMMENT, pos, $1];
     }
     elsif (/\G([0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z)/mgco) {
         warn "[TOKEN] DATETIME: $1" if DEBUG;
+        $class->_skip_whitespace();
         return [TOKEN_DATETIME, pos, $1];
     }
     elsif (/\G(-?[0-9]*\.[0-9]+)/mgco) {
         warn "[TOKEN] FLOAT: $1" if DEBUG;
+        $class->_skip_whitespace();
         return [TOKEN_FLOAT, pos, $1];
     }
     elsif (/\G(-?[0-9]+)/mgco) {
         warn "[TOKEN] INTEGER: $1" if DEBUG;
+        $class->_skip_whitespace();
         return [TOKEN_INTEGER, pos, $1];
     }
     elsif (/\G(true|false)\s*/mgco) {
         warn "[TOKEN] BOOLEAN: $1" if DEBUG;
+        $class->_skip_whitespace();
         return [TOKEN_BOOLEAN, pos, $1];
     }
     elsif (/\G"(.+?)(?<!\\)"/mgco) {
         warn "[TOKEN] STRING: $1" if DEBUG;
+        $class->_skip_whitespace();
         return [TOKEN_STRING, pos, $1];
     }
     elsif (/\G\[/mgco) {
         warn "[TOKEN] ARRAY" if DEBUG;
+        $class->_skip_whitespace();
         return (
             [TOKEN_ARRAY_BEGIN, pos],
             $class->_tokenize_array(),
@@ -122,24 +130,26 @@ sub _tokenize_value {
 
 sub _tokenize_array {
     my $class = shift;
-    if (/\G\s+/smgco) {
-        # pass through
-        warn "[PASS] WHITESPACE" if DEBUG;
-    }
+    warn "[CALL] _tokenize_array" if DEBUG;
     return if /\G\]/mgco;
 
     my @tokens = $class->_tokenize_value();
     while (/\G,\s*/smgco || !/\G\]/mgco) {
+        warn "[CONTEXT] _tokenize_array [loop]" if DEBUG;
+        $class->_skip_whitespace();
         push @tokens => $class->_tokenize_value();
-    }
-    continue {
-        if (/\G\s+/smgco) {
-            # pass through
-            warn "[PASS] WHITESPACE" if DEBUG;
-        }
+        $class->_skip_whitespace();
     }
 
     return @tokens;
+}
+
+sub _skip_whitespace {
+    my $class = shift;
+    if (/\G\s+/smgco) {
+        # pass through
+        warn "[PASS] WHITESPACE" if DEBUG;
+    }
 }
 
 sub _syntax_error {
