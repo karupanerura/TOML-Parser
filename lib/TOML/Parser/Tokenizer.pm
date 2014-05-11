@@ -156,8 +156,8 @@ sub _syntax_error {
     my $class = shift;
 
     my $src   = $_;
-    my $line  = 0;
-    my $start = pos $src;
+    my $line  = 1;
+    my $start = pos $src || 0;
     while ($src =~ /$/smgco and pos $src <= pos) {
         $start = pos $src;
         $line++;
