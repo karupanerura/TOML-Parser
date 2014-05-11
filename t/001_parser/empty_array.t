@@ -20,10 +20,13 @@ my $parser = TOML::Parser->new(
 
 my $data = $parser->parse_fh(\*DATA);
 
-is_deeply $data => thaw(decode_base64(<<'__EXPECTED__')), '/dev/fd/11';
-BQkDAAAAAA==
+is_deeply $data => thaw(decode_base64(<<'__EXPECTED__')), 'empty_array.toml';
+BQkDAAAAAgQCAAAAAAAAAAZhcnJheTIEAgAAAAAAAAAGYXJyYXkx
 
 __EXPECTED__
 
 __DATA__
-
+array1 = []
+array2 = [
+   # empty!!
+]
