@@ -61,6 +61,17 @@
       }
    },
    "release_status" : "unstable",
+   "resources" : {
+      "bugtracker" : {
+         "web" : "https://github.com/karupanerura/TOML-Parser/issues"
+      },
+      "homepage" : "https://github.com/karupanerura/TOML-Parser",
+      "repository" : {
+         "type" : "git",
+         "url" : "git://github.com/karupanerura/TOML-Parser.git",
+         "web" : "https://github.com/karupanerura/TOML-Parser"
+      }
+   },
    "version" : "0.01",
    "x_authority" : "cpan:KARUPA"
 }

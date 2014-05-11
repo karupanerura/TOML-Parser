@@ -1,3 +1,4 @@
+[![Build Status](https://travis-ci.org/karupanerura/TOML-Parser.png?branch=master)](https://travis-ci.org/karupanerura/TOML-Parser)
 # NAME
 
 TOML::Parser - simple toml parser
