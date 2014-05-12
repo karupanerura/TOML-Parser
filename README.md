@@ -19,14 +19,14 @@ provided at [https://github.com/mojombo/toml/tree/master/tests](https://github.c
 
 # WHY?
 
-I think `TOML::from_toml` maintenance is difficult.
-And, I know there are several problems with `TOML::from_toml`.
+I think that `TOML::from_toml` maintenance is difficult.
+And, I know that it has some problems.
 
-In particular, `TOML::from_toml` can not correctly interpret some cases.
-And, There are cases when error occurs, where that line number is not correctly.
-(Because, `TOML::from_toml` is deleting the comment and blank line before parse.)
+In particular, `TOML::from_toml` cannot parse correctly in some cases.
+And, When error occurs, It report line number not correctly.
+(Because, It is deleting the comment and blank line before parse.)
 
-I think `TOML::from_toml` have a problem of architecture.
+I think that `TOML::from_toml` has a problem of architecture.
 I decide to re-create another implementation for solve this problem.
 Because, I think that this is easier than other solution.
 
