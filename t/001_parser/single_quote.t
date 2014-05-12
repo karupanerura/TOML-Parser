@@ -23,8 +23,12 @@ my $data = $parser->parse_fh(\*DATA);
 is_deeply $data => +{
     string1 => 'foobar',
     string2 => 'barbaz',
+    string3 => 'foo"bar',
+    string4 => 'bar\'baz',
 }, 'single_quote.toml';
 
 __DATA__
 string1='foobar'
 string2="barbaz"
+string3='foo"bar'
+string4="bar'baz"
