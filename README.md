@@ -59,6 +59,9 @@ In Japanese:
     - `inflate_datetime`
 
         If use it, You can replace inflate `datetime` process.
+        It inflates to string by default.
+
+        example:
 
             use TOML::Parser;
             use DateTime;
@@ -75,6 +78,9 @@ In Japanese:
     - `inflate_boolean`
 
         If use it, You can replace inflate boolean process.
+        It inflates to [Types::Serializer](https://metacpan.org/pod/Types::Serializer) by default.
+
+        example:
 
             use TOML::Parser;
 

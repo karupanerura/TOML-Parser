@@ -225,6 +225,9 @@ Arguments can be:
 =item * C<inflate_datetime>
 
 If use it, You can replace inflate C<datetime> process.
+It inflates to string by default.
+
+example:
 
     use TOML::Parser;
     use DateTime;
@@ -241,6 +244,9 @@ If use it, You can replace inflate C<datetime> process.
 =item * C<inflate_boolean>
 
 If use it, You can replace inflate boolean process.
+It inflates to L<Types::Serializer> by default.
+
+example:
 
     use TOML::Parser;
 
