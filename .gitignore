@@ -27,3 +27,6 @@ cover_db/
 MYMETA.*
 
 /TOML-Parser-*
+/.build
+!Build/
+!META.json

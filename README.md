@@ -21,25 +21,14 @@ provided at [https://github.com/mojombo/toml/tree/master/tests](https://github.c
 
 In my point of view, it's very difficult to maintain `TOML::from_toml` because -so far as I understand- there's some issues.
 
-Specifically, for example, `TOML::from_toml` doesn't interpret correctly in some cases. In addition, it reports wrong line number when the error occurs.
+Specifically, for example, `TOML::from_toml` doesn't interpret correctly in some cases.
+In addition, it reports wrong line number when the error occurs.
 (This is because `TOML::from_toml` deletes the comments and blank lines before it parses.)
 
-I conclude that `TOML::from_toml` has an architectural feet, and that's why I came to an idea of re-creating another implementation in order to solve the problem.
+I conclude that `TOML::from_toml` has an architectural feet,
+and that's why I came to an idea of re-creating another implementation in order to solve the problem.
 
 I believe that this is much easier than taking other solutions.
-
-In Japanese:
-
-    私はTOML::from_tomlのメンテナンスは非常に困難だと思います。
-    また、私の知る限りではTOML::from_tomlにはいくつかの問題があります。
-
-    具体的には、TOML::from_tomlはいくつかのケースで正しく解釈出来ません。
-    また、エラーが起きたときに、その行数が正しく報告されません。
-    （なぜなら、TOML::from_tomlはパーズの前にコメントや空行を削除しているからです。）
-
-    TOML::from_tomlにはアーキテクチャ的な欠陥があると思います。
-    私はこの問題を解決するために別の実装を作り直す事にしました。
-    これが他の解決方法より簡単だと思ったからです。
 
 # METHODS
 
