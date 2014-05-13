@@ -19,16 +19,14 @@ provided at [https://github.com/mojombo/toml/tree/master/tests](https://github.c
 
 # WHY?
 
-I think that `TOML::from_toml` maintenance is difficult.
-And, I know that it has some problems.
+In my point of view, it's very difficult to maintain `TOML::from_toml` because -so far as I understand- there's some issues.
 
-In particular, `TOML::from_toml` cannot parse correctly in some cases.
-And, When error occurs, It report line number not correctly.
-(Because, It is deleting the comment and blank line before parse.)
+Specifically, for example, `TOML::from_toml` doesn't interpret correctly in some cases. In addition, it reports wrong line number when the error occurs.
+(This is because `TOML::from_toml` deletes the comments and blank lines before it parses.)
 
-I think that `TOML::from_toml` has a problem of architecture.
-I decide to re-create another implementation for solve this problem.
-Because, I think that this is easier than other solution.
+I conclude that `TOML::from_toml` has an architectural feet, and that's why I came to an idea of re-creating another implementation in order to solve the problem.
+
+I believe that this is much easier than taking other solutions.
 
 In Japanese:
 
@@ -59,9 +57,6 @@ In Japanese:
     - `inflate_datetime`
 
         If use it, You can replace inflate `datetime` process.
-        It inflates to string by default.
-
-        example:
 
             use TOML::Parser;
             use DateTime;
@@ -78,9 +73,6 @@ In Japanese:
     - `inflate_boolean`
 
         If use it, You can replace inflate boolean process.
-        It inflates to [Types::Serializer](https://metacpan.org/pod/Types::Serializer) by default.
-
-        example:
 
             use TOML::Parser;
 
