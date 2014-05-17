@@ -15,7 +15,7 @@ on test => sub {
 };
 
 on develop => sub {
-    requires 'File::Slurp';
+    requires 'Path::Tiny';
     requires 'JSON', '2';
     requires 'TOML';
 };

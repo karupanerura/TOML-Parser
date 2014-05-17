@@ -35,8 +35,8 @@
       },
       "develop" : {
          "requires" : {
-            "File::Slurp" : "0",
             "JSON" : "2",
+            "Path::Tiny" : "0",
             "TOML" : "0",
             "Test::CPAN::Meta" : "0",
             "Test::MinimumVersion::Fast" : "0.04",

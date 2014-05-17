@@ -1,3 +1,4 @@
+#!/usr/bin/env perl
 use strict;
 use warnings;
 use utf8;
@@ -5,7 +6,7 @@ use utf8;
 use JSON 2;
 use Storable qw/nfreeze/;
 use MIME::Base64;
-use File::Slurp qw/slurp/;
+use Path::Tiny;
 use Data::Dumper ();
 local $Data::Dumper::Terse    = 1;
 local $Data::Dumper::Indent   = 0;
@@ -13,7 +14,7 @@ local $Data::Dumper::Sortkeys = 1;
 
 my $file = shift @ARGV or die "Usage: $0 target.toml";
 
-my $toml      = slurp($file);
+my $toml      = path($file)->slurp;
 my $toml_data = decode_json(`ruby -rtoml -rjson -e 'print JSON.dump TOML.load_file("$file")'`);
 printf <<'...', $file, encode_base64(nfreeze($toml_data)), $toml;
 use strict;
