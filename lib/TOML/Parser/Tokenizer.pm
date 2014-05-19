@@ -109,10 +109,10 @@ sub _tokenize_value {
         $class->_skip_whitespace();
         return [TOKEN_BOOLEAN, pos, $1];
     }
-    elsif (/\G(?:"(.+?)(?<!(?<!\\)\\)"|'(.+?)(?<!(?<!\\)\\)')/mgco) {
+    elsif (/\G(?:"(.*?)(?<!(?<!\\)\\)"|'(.*?)(?<!(?<!\\)\\)')/mgco) {
         warn "[TOKEN] STRING: $1" if DEBUG;
         $class->_skip_whitespace();
-        return [TOKEN_STRING, pos, $1 || $2];
+        return [TOKEN_STRING, pos, $1 || $2 || ''];
     }
     elsif (/\G\[/mgco) {
         warn "[TOKEN] ARRAY" if DEBUG;
