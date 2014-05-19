@@ -48,10 +48,10 @@ sub _tokenize {
 
     my @tokens;
     until (/\G\z/mgco) {
-        if (/\G#(.+)/mgco) {
+        if (/\G#(.*)/mgco) {
             warn "[TOKEN] COMMENT: $1" if DEBUG;
             $class->_skip_whitespace();
-            push @tokens => [TOKEN_COMMENT, pos, $1];
+            push @tokens => [TOKEN_COMMENT, pos, $1 || ''];
         }
         elsif (/\G\[\[([^.\s\\\]]+(?:\.[^.\s\\\]]+)*)\]\]/mgco) {
             warn "[TOKEN] ARRAY_OF_TABLE: $1" if DEBUG;
@@ -84,10 +84,10 @@ sub _tokenize_value {
     my $class = shift;
     warn "[CALL] _tokenize_value" if DEBUG;
 
-    if (/\G#(.+)/mgco) {
+    if (/\G#(.*)/mgco) {
         warn "[TOKEN] COMMENT: $1" if DEBUG;
         $class->_skip_whitespace();
-        return [TOKEN_COMMENT, pos, $1];
+        return [TOKEN_COMMENT, pos, $1 || ''];
     }
     elsif (/\G([0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z)/mgco) {
         warn "[TOKEN] DATETIME: $1" if DEBUG;
