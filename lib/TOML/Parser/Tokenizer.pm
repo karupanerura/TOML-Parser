@@ -131,10 +131,11 @@ sub _tokenize_value {
 sub _tokenize_array {
     my $class = shift;
     warn "[CALL] _tokenize_array" if DEBUG;
-    return if /\G\]/mgco;
+    return if /\G(?:,\s*)?\]/smgco;
 
     my @tokens = $class->_tokenize_value();
     while (/\G,\s*/smgco || !/\G\]/mgco) {
+        last if /\G\]/mgco;
         warn "[CONTEXT] _tokenize_array [loop]" if DEBUG;
         $class->_skip_whitespace();
         push @tokens => $class->_tokenize_value();
