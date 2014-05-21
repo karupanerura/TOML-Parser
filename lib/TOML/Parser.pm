@@ -8,6 +8,7 @@ use Encode;
 our $VERSION = "0.02";
 
 use TOML::Parser::Tokenizer qw/:constant/;
+use TOML::Parser::Tokenizer::Strict;
 use TOML::Parser::Util qw/unescape_str/;
 use Types::Serialiser;
 
@@ -17,6 +18,7 @@ sub new {
     return bless +{
         inflate_datetime => sub { $_[0] },
         inflate_boolean  => sub { $_[0] eq 'true' ? Types::Serialiser::true : Types::Serialiser::false },
+        strict           => 0,
         %$args,
     } => $class;
 }
@@ -33,6 +35,11 @@ sub parse_fh {
     return $self->parse($src);
 }
 
+sub _tokenizer_class {
+    my $self = shift;
+    return $self->{strict} ? 'TOML::Parser::Tokenizer::Strict' : 'TOML::Parser::Tokenizer';
+}
+
 our @TOKENS;
 our $ROOT;
 our $CONTEXT;
@@ -41,7 +48,7 @@ sub parse {
 
     local $ROOT    = {};
     local $CONTEXT = $ROOT;
-    local @TOKENS  = TOML::Parser::Tokenizer->tokenize($src);
+    local @TOKENS  = $self->_tokenizer_class->tokenize($src);
     return $self->_parse_tokens();
 }
 
@@ -49,7 +56,7 @@ sub _parse_tokens {
     my $self = shift;
 
     while (my $token = shift @TOKENS) {
-        my ($type, $pos, $val) = @$token;
+        my ($type, $val) = @$token;
         if ($type eq TOKEN_TABLE) {
             $self->_parse_table($val);
         }
@@ -117,7 +124,7 @@ sub _parse_value_token {
     my $self  = shift;
     my $token = shift;
 
-    my ($type, $pos, $val) = @$token;
+    my ($type, $val) = @$token;
     if ($type eq TOKEN_COMMENT) {
         return; # pass through
     }
@@ -278,4 +285,3 @@ it under the same terms as Perl itself.
 karupanerura E<lt>karupa@cpan.orgE<gt>
 
 =cut
-

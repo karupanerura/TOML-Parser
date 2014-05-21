@@ -36,6 +36,27 @@ BEGIN {
     );
 };
 
+sub grammar_regexp {
+    return +{
+        comment        => qr{#(.*)},
+        table          => qr{\[([^.\s\\\]]+(?:\.[^.\s\\\]]+)*)\]},
+        array_of_table => qr{\[\[([^.\s\\\]]+(?:\.[^.\s\\\]]+)*)\]\]},
+        key            => qr{([^.\s\\]+)\s*=},
+        value          => {
+            datetime => qr{([0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z)},
+            float    => qr{(-?[0-9]*\.[0-9]+)},
+            integer  => qr{(-?[0-9]+)},
+            boolean  => qr{(true|false)},
+            string   => qr{(?:"(.*?)(?<!(?<!\\)\\)"|\'(.*?)(?<!(?<!\\)\\)\')},
+            array    => {
+                start => qr{\[},
+                sep   => qr{\s*,\s*},
+                end   => qr{\]},
+            },
+        },
+    };
+}
+
 sub tokenize {
     my ($class, $src) = @_;
 
@@ -45,28 +66,29 @@ sub tokenize {
 
 sub _tokenize {
     my $class = shift;
+    my $grammar_regexp = $class->grammar_regexp();
 
     my @tokens;
     until (/\G\z/mgco) {
-        if (/\G#(.*)/mgco) {
+        if (/\G$grammar_regexp->{comment}/mgc) {
             warn "[TOKEN] COMMENT: $1" if DEBUG;
             $class->_skip_whitespace();
-            push @tokens => [TOKEN_COMMENT, pos, $1 || ''];
+            push @tokens => [TOKEN_COMMENT, $1 || ''];
         }
-        elsif (/\G\[\[([^.\s\\\]]+(?:\.[^.\s\\\]]+)*)\]\]/mgco) {
+        elsif (/\G$grammar_regexp->{array_of_table}/mgc) {
             warn "[TOKEN] ARRAY_OF_TABLE: $1" if DEBUG;
             $class->_skip_whitespace();
-            push @tokens => [TOKEN_ARRAY_OF_TABLE, pos, $1];
+            push @tokens => [TOKEN_ARRAY_OF_TABLE, $1];
         }
-        elsif (/\G\[([^.\s\\\]]+(?:\.[^.\s\\\]]+)*)\]/mgco) {
+        elsif (/\G$grammar_regexp->{table}/mgc) {
             warn "[TOKEN] TABLE: $1" if DEBUG;
             $class->_skip_whitespace();
-            push @tokens => [TOKEN_TABLE, pos, $1];
+            push @tokens => [TOKEN_TABLE, $1];
         }
-        elsif (/\G([^.\s\\\]]+)\s*=/mgco) {
+        elsif (/\G$grammar_regexp->{key}/mgc) {
             warn "[TOKEN] KEY: $1" if DEBUG;
             $class->_skip_whitespace();
-            push @tokens => [TOKEN_KEY, pos, $1];
+            push @tokens => [TOKEN_KEY, $1];
             push @tokens => $class->_tokenize_value();
         }
         elsif (/\G\s+/mgco) {
@@ -82,45 +104,46 @@ sub _tokenize {
 
 sub _tokenize_value {
     my $class = shift;
+    my $grammar_regexp = $class->grammar_regexp();
     warn "[CALL] _tokenize_value" if DEBUG;
 
-    if (/\G#(.*)/mgco) {
+    if (/\G$grammar_regexp->{comment}/mgc) {
         warn "[TOKEN] COMMENT: $1" if DEBUG;
         $class->_skip_whitespace();
-        return [TOKEN_COMMENT, pos, $1 || ''];
+        return [TOKEN_COMMENT, $1 || ''];
     }
-    elsif (/\G([0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z)/mgco) {
+    elsif (/\G$grammar_regexp->{value}->{datetime}/mgc) {
         warn "[TOKEN] DATETIME: $1" if DEBUG;
         $class->_skip_whitespace();
-        return [TOKEN_DATETIME, pos, $1];
+        return [TOKEN_DATETIME, $1];
     }
-    elsif (/\G(-?[0-9]*\.[0-9]+)/mgco) {
+    elsif (/\G$grammar_regexp->{value}->{float}/mgc) {
         warn "[TOKEN] FLOAT: $1" if DEBUG;
         $class->_skip_whitespace();
-        return [TOKEN_FLOAT, pos, $1];
+        return [TOKEN_FLOAT, $1];
     }
-    elsif (/\G(-?[0-9]+)/mgco) {
+    elsif (/\G$grammar_regexp->{value}->{integer}/mgc) {
         warn "[TOKEN] INTEGER: $1" if DEBUG;
         $class->_skip_whitespace();
-        return [TOKEN_INTEGER, pos, $1];
+        return [TOKEN_INTEGER, $1];
     }
-    elsif (/\G(true|false)\s*/mgco) {
+    elsif (/\G$grammar_regexp->{value}->{boolean}/mgc) {
         warn "[TOKEN] BOOLEAN: $1" if DEBUG;
         $class->_skip_whitespace();
-        return [TOKEN_BOOLEAN, pos, $1];
+        return [TOKEN_BOOLEAN, $1];
     }
-    elsif (/\G(?:"(.*?)(?<!(?<!\\)\\)"|'(.*?)(?<!(?<!\\)\\)')/mgco) {
+    elsif (/\G$grammar_regexp->{value}->{string}/mgc) {
         warn "[TOKEN] STRING: $1" if DEBUG;
         $class->_skip_whitespace();
-        return [TOKEN_STRING, pos, $1 || $2 || ''];
+        return [TOKEN_STRING, $1 || $2 || ''];
     }
-    elsif (/\G\[/mgco) {
+    elsif (/\G$grammar_regexp->{value}->{array}->{start}/mgc) {
         warn "[TOKEN] ARRAY" if DEBUG;
         $class->_skip_whitespace();
         return (
-            [TOKEN_ARRAY_BEGIN, pos],
+            [TOKEN_ARRAY_BEGIN],
             $class->_tokenize_array(),
-            [TOKEN_ARRAY_END, pos],
+            [TOKEN_ARRAY_END],
         );
     }
     else {
@@ -130,12 +153,13 @@ sub _tokenize_value {
 
 sub _tokenize_array {
     my $class = shift;
+    my $grammar_regexp = $class->grammar_regexp()->{value}->{array};
     warn "[CALL] _tokenize_array" if DEBUG;
-    return if /\G(?:,\s*)?\]/smgco;
+    return if /\G(?:$grammar_regexp->{sep})?$grammar_regexp->{end}/smgc;
 
     my @tokens = $class->_tokenize_value();
-    while (/\G,\s*/smgco || !/\G\]/mgco) {
-        last if /\G\]/mgco;
+    while (/\G$grammar_regexp->{sep}/smgc || !/\G$grammar_regexp->{end}/mgc) {
+        last if /\G$grammar_regexp->{end}/mgc;
         warn "[CONTEXT] _tokenize_array [loop]" if DEBUG;
         $class->_skip_whitespace();
         push @tokens => $class->_tokenize_value();
@@ -153,8 +177,10 @@ sub _skip_whitespace {
     }
 }
 
-sub _syntax_error {
-    my $class = shift;
+sub _syntax_error { shift->_error('Syntax Error') }
+
+sub _error {
+    my ($class, $msg) = @_;
 
     my $src   = $_;
     my $line  = 1;
@@ -167,7 +193,7 @@ sub _syntax_error {
     my $len   = pos() - $start - 1;
 
     my $trace = join "\n",
-        "Syntax Error: line:$line",
+        "${msg}: line:$line",
         substr($src, $start || 0, $end - $start),
         (' ' x $len) . '^';
     die $trace, "\n";
