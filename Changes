@@ -2,6 +2,8 @@ Revision history for Perl extension TOML-Parser
 
 {{$NEXT}}
 
+0.03 2014-05-22T13:22:37Z
+
     - [FIXED] Die when key duplicate.
     - [FIXED] Allow comma at last of array.
     - [FEATURE] Added `strict_mode`.

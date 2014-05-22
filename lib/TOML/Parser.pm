@@ -5,7 +5,7 @@ use warnings;
 use utf8;
 use Encode;
 
-our $VERSION = "0.02";
+our $VERSION = "0.03";
 
 use TOML::Parser::Tokenizer qw/:constant/;
 use TOML::Parser::Tokenizer::Strict;
