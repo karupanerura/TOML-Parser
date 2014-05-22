@@ -18,7 +18,7 @@ sub new {
     return bless +{
         inflate_datetime => sub { $_[0] },
         inflate_boolean  => sub { $_[0] eq 'true' ? Types::Serialiser::true : Types::Serialiser::false },
-        strict           => 0,
+        strict_mode      => 0,
         %$args,
     } => $class;
 }
@@ -37,7 +37,7 @@ sub parse_fh {
 
 sub _tokenizer_class {
     my $self = shift;
-    return $self->{strict} ? 'TOML::Parser::Tokenizer::Strict' : 'TOML::Parser::Tokenizer';
+    return $self->{strict_mode} ? 'TOML::Parser::Tokenizer::Strict' : 'TOML::Parser::Tokenizer';
 }
 
 our @TOKENS;
