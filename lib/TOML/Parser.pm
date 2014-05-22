@@ -65,6 +65,7 @@ sub _parse_tokens {
         }
         elsif ($type eq TOKEN_KEY) {
             my $token = shift @TOKENS;
+            die "Duplicate key. key:$val" if exists $CONTEXT->{$val};
             $CONTEXT->{$val} = $self->_parse_value_token($token);
         }
         elsif ($type eq TOKEN_COMMENT) {
