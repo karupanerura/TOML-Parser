@@ -5,6 +5,7 @@ use warnings;
 use utf8;
 
 use parent qw/TOML::Parser::Tokenizer/;
+BEGIN { import TOML::Parser::Tokenizer qw/:constant/ }
 
 sub grammar_regexp {
     my $grammar_regexp = {%{ shift->SUPER::grammar_regexp() }};
@@ -13,13 +14,19 @@ sub grammar_regexp {
     return $grammar_regexp;
 }
 
+my %ALLOWED_TOKEN_MAP = (
+    TOKEN_COMMENT() => 1,
+);
+
 our $EXPECT_VALUE_TOKEN;
 sub _tokenize_value {
     my $class = shift;
     my @tokens = $class->SUPER::_tokenize_value();
     if (defined $EXPECT_VALUE_TOKEN) {
         my $token = $tokens[0][0];
-        $class->_error("Unexpected token. expected: $EXPECT_VALUE_TOKEN, but got: $token") if $token ne $EXPECT_VALUE_TOKEN;
+        if (not exists $ALLOWED_TOKEN_MAP{$token} and $token ne $EXPECT_VALUE_TOKEN) {
+            $class->_error("Unexpected token. expected: $EXPECT_VALUE_TOKEN, but got: $token");
+        }
     }
     return @tokens;
 }
