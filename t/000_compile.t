@@ -1,5 +1,5 @@
 use strict;
-use Test::More tests => 3;
+use Test::More 0.98 tests => 3;
 
 use_ok $_ for qw(
     TOML::Parser

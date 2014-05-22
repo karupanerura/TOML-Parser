@@ -15,7 +15,7 @@ on test => sub {
 };
 
 on develop => sub {
-    requires 'Path::Tiny';
     requires 'JSON', '2';
+    requires 'Path::Tiny';
     requires 'TOML';
 };
