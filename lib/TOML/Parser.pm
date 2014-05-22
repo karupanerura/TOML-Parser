@@ -206,6 +206,7 @@ Arguments can be:
 =item * C<inflate_datetime>
 
 If use it, You can replace inflate C<datetime> process.
+The subroutine of default is C<identity>. C<e.g.) sub { $_[0] }>
 
     use TOML::Parser;
     use DateTime;
@@ -222,6 +223,7 @@ If use it, You can replace inflate C<datetime> process.
 =item * C<inflate_boolean>
 
 If use it, You can replace inflate boolean process.
+The return value of default subroutine is C<Types::Serialiser::true> or C<Types::Serialiser::false>.
 
     use TOML::Parser;
 

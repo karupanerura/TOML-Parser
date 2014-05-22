@@ -33,6 +33,7 @@ provided at [https://github.com/mojombo/toml/tree/master/tests](https://github.c
     - `inflate_datetime`
 
         If use it, You can replace inflate `datetime` process.
+        The subroutine of default is `identity`. `e.g.) sub { $_[0] }`
 
             use TOML::Parser;
             use DateTime;
@@ -49,6 +50,7 @@ provided at [https://github.com/mojombo/toml/tree/master/tests](https://github.c
     - `inflate_boolean`
 
         If use it, You can replace inflate boolean process.
+        The return value of default subroutine is `Types::Serialiser::true` or `Types::Serialiser::false`.
 
             use TOML::Parser;
 
