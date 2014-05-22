@@ -1,41 +1,3 @@
-use strict;
-use warnings;
-use utf8;
-
-use Test::More  tests => 2;
-use Storable qw/thaw/;
-use MIME::Base64;
-
-use TOML::Parser;
-
-sub inflate_datetime {
-    my $dt = shift;
-    $dt =~ s/Z$/+00:00/;
-    return $dt;
-}
-
-my $toml = do { local $/; <DATA> };
-
-my $expected = thaw(decode_base64(<<'__EXPECTED__'));
-BQkDAAAAAQQDAAAAAgQDAAAABQQCAAAAAgoCXSAKAyAjIAAAAAp0ZXN0X2FycmF5CiAgU2FtZSB0
-aGluZywgYnV0IHdpdGggYSBzdHJpbmcgIwAAABNhbm90aGVyX3Rlc3Rfc3RyaW5nCi8gQW5kIHdo
-ZW4gIidzIGFyZSBpbiB0aGUgc3RyaW5nLCBhbG9uZyB3aXRoICMgIgAAABJoYXJkZXJfdGVzdF9z
-dHJpbmcEAgAAAAIKFVRlc3QgIzExIF1wcm92ZWQgdGhhdAobRXhwZXJpbWVudCAjOSB3YXMgYSBz
-dWNjZXNzAAAAC3Rlc3RfYXJyYXkyBAMAAAACCihZb3UgZG9uJ3QgdGhpbmsgc29tZSB1c2VyIHdv
-bid0IGRvIHRoYXQ/AAAABXdoYXQ/BAIAAAABCgFdAAAAEG11bHRpX2xpbmVfYXJyYXkAAAAEYml0
-IwAAAARoYXJkCh1Zb3UnbGwgaGF0ZSBtZSBhZnRlciB0aGlzIC0gIwAAAAt0ZXN0X3N0cmluZwAA
-AAN0aGU=
-
-__EXPECTED__
-
-for my $strict (0, 1) {
-    my $parser = TOML::Parser->new(inflate_datetime => \&inflate_datetime, strict => $strict);
-    my $data   = $parser->parse($toml);
-    note explain { data => $data, expected => $expected } if $ENV{AUTHOR_TESTING};
-    is_deeply $data => $expected, "t/toml/hard_example.toml: strict: $strict";
-}
-
-__DATA__
 # Test file for TOML
 # Only this one tries to emulate a TOML file written by a user of the kind of parser writers probably hate
 # This part you'll really hate
@@ -69,5 +31,4 @@ test_string = "You'll hate me after this - #"          # " Annoying, isn't it?
 #         and here"
 #         ]     End of array comment, forgot the #
 #number = 3.14  pi <--again forgot the #         
-
 

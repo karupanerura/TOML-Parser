@@ -2,39 +2,42 @@ use strict;
 use warnings;
 use utf8;
 
-use Test::More;
+use Test::More  tests => 2;
 use Storable qw/thaw/;
 use MIME::Base64;
-plan tests => 1;
 
 use TOML::Parser;
-use Types::Serialiser;
 
-my $parser = TOML::Parser->new(
-    inflate_datetime => sub {
-        my $dt = shift;
-        $dt =~ s/Z$/+00:00/;
-        return $dt;
-    },
-);
+sub inflate_datetime {
+    my $dt = shift;
+    $dt =~ s/Z$/+00:00/;
+    return $dt;
+}
 
-my $data = $parser->parse_fh(\*DATA);
+my $toml = do { local $/; <DATA> };
 
-is_deeply $data => thaw(decode_base64(<<'__EXPECTED__')), 'example.toml';
-BQkDAAAABgQDAAAAAgQDAAAAAwoIMTAuMC4wLjIAAAACaXAKBmVxZGMxMAAAAAJkYxcG5Lit5Zu9
-AAAAB2NvdW50cnkAAAAEYmV0YQQDAAAAAgoGZXFkYzEwAAAAAmRjCggxMC4wLjAuMQAAAAJpcAAA
-AAVhbHBoYQAAAAdzZXJ2ZXJzBAMAAAAEChkxOTc5LTA1LTI3VDA3OjMyOjAwKzAwOjAwAAAAA2Rv
-YgoSVG9tIFByZXN0b24tV2VybmVyAAAABG5hbWUKMUdpdEh1YiBDb2ZvdW5kZXIgJiBDRU8KTGlr
-ZXMgdGF0ZXIgdG90cyBhbmQgYmVlci4AAAADYmlvCgZHaXRIdWIAAAAMb3JnYW5pemF0aW9uAAAA
-BW93bmVyBAMAAAACBAIAAAACCgVhbHBoYQoFb21lZ2EAAAAFaG9zdHMEAgAAAAIEAgAAAAIKBWdh
-bW1hCgVkZWx0YQQCAAAAAgiBCIIAAAAEZGF0YQAAAAdjbGllbnRzBAMAAAAEBAIAAAADCQAAH0EJ
-AAAfQQkAAB9CAAAABXBvcnRzFBERSlNPTjo6UFA6OkJvb2xlYW4IgQAAAAdlbmFibGVkCgsxOTIu
-MTY4LjEuMQAAAAZzZXJ2ZXIJAAATiAAAAA5jb25uZWN0aW9uX21heAAAAAhkYXRhYmFzZQQCAAAA
-AgQDAAAAAgoGSGFtbWVyAAAABG5hbWUJLAYQeQAAAANza3UEAwAAAAMKBE5haWwAAAAEbmFtZQoE
-Z3JheQAAAAVjb2xvcgkQ+RF5AAAAA3NrdQAAAAhwcm9kdWN0cwoMVE9NTCBFeGFtcGxlAAAABXRp
-dGxl
+my $expected = thaw(decode_base64(<<'__EXPECTED__'));
+BQkDAAAABgoMVE9NTCBFeGFtcGxlAAAABXRpdGxlBAMAAAAEChkxOTc5LTA1LTI3VDA3OjMyOjAw
+KzAwOjAwAAAAA2RvYgoxR2l0SHViIENvZm91bmRlciAmIENFTwpMaWtlcyB0YXRlciB0b3RzIGFu
+ZCBiZWVyLgAAAANiaW8KBkdpdEh1YgAAAAxvcmdhbml6YXRpb24KElRvbSBQcmVzdG9uLVdlcm5l
+cgAAAARuYW1lAAAABW93bmVyBAMAAAACBAMAAAACCgZlcWRjMTAAAAACZGMKCDEwLjAuMC4xAAAA
+AmlwAAAABWFscGhhBAMAAAADCgZlcWRjMTAAAAACZGMXBuS4reWbvQAAAAdjb3VudHJ5CggxMC4w
+LjAuMgAAAAJpcAAAAARiZXRhAAAAB3NlcnZlcnMEAwAAAAIEAgAAAAIKBWFscGhhCgVvbWVnYQAA
+AAVob3N0cwQCAAAAAgQCAAAAAgoFZ2FtbWEKBWRlbHRhBAIAAAACCIEIggAAAARkYXRhAAAAB2Ns
+aWVudHMEAgAAAAIEAwAAAAIJLAYQeQAAAANza3UKBkhhbW1lcgAAAARuYW1lBAMAAAADCgROYWls
+AAAABG5hbWUKBGdyYXkAAAAFY29sb3IJEPkReQAAAANza3UAAAAIcHJvZHVjdHMEAwAAAAQEAgAA
+AAMJAAAfQQkAAB9BCQAAH0IAAAAFcG9ydHMKCzE5Mi4xNjguMS4xAAAABnNlcnZlchQREUpTT046
+OlBQOjpCb29sZWFuCIEAAAAHZW5hYmxlZAkAABOIAAAADmNvbm5lY3Rpb25fbWF4AAAACGRhdGFi
+YXNl
 
 __EXPECTED__
+
+for my $strict (0, 1) {
+    my $parser = TOML::Parser->new(inflate_datetime => \&inflate_datetime, strict => $strict);
+    my $data   = $parser->parse($toml);
+    note explain { data => $data, expected => $expected } if $ENV{AUTHOR_TESTING};
+    is_deeply $data => $expected, "t/toml/example.toml: strict: $strict";
+}
 
 __DATA__
 # This is a TOML document. Boom.
@@ -84,4 +87,5 @@ hosts = [
   name = "Nail"
   sku = 284758393
   color = "gray"
+
 
