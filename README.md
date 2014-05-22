@@ -62,6 +62,18 @@ provided at [https://github.com/mojombo/toml/tree/master/tests](https://github.c
                 },
             );
 
+    - `strict_mode`
+
+        TOML::Parser is using a more flexible rule for compatibility with old TOML of default.
+        If make this option true value, You can parse a toml with strict rule.
+
+            use TOML::Parser;
+
+            # create new parser
+            my $parser = TOML::Parser->new(
+                strict_mode => 1
+            );
+
 - my $data = $parser->parse\_file($path)
 - my $data = $parser->parse\_fh($fh)
 - my $data = $parser->parse($src)

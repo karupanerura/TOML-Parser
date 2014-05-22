@@ -235,6 +235,18 @@ The return value of default subroutine is C<Types::Serialiser::true> or C<Types:
         },
     );
 
+=item * C<strict_mode>
+
+TOML::Parser is using a more flexible rule for compatibility with old TOML of default.
+If make this option true value, You can parse a toml with strict rule.
+
+    use TOML::Parser;
+
+    # create new parser
+    my $parser = TOML::Parser->new(
+        strict_mode => 1
+    );
+
 =back
 
 =item my $data = $parser->parse_file($path)
