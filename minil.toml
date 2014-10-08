@@ -1,3 +1,4 @@
 name = "TOML-Parser"
 badges = ["travis"]
 authority="cpan:KARUPA"
+module_maker="ModuleBuildTiny"
