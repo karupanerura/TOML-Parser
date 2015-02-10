@@ -2,7 +2,6 @@ package TOML::Parser::Tokenizer;
 use 5.008005;
 use strict;
 use warnings;
-use utf8;
 
 use parent qw/Exporter/;
 
