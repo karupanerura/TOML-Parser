@@ -1,6 +1,7 @@
 requires 'Encode';
 requires 'Types::Serialiser';
 requires 'parent';
+requires 'Exporter', '5.57';
 requires 'perl', '5.008005';
 
 on configure => sub {

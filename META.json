@@ -49,6 +49,7 @@
       "runtime" : {
          "requires" : {
             "Encode" : "0",
+            "Exporter" : "5.57",
             "Types::Serialiser" : "0",
             "parent" : "0",
             "perl" : "5.008005"

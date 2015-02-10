@@ -3,7 +3,7 @@ use 5.008005;
 use strict;
 use warnings;
 
-use parent qw/Exporter/;
+use Exporter 5.57 'import';
 
 use constant DEBUG => $ENV{TOML_PARSER_TOKENIZER_DEBUG} ? 1 : 0;
 
