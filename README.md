@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/karupanerura/TOML-Parser.png?branch=master)](https://travis-ci.org/karupanerura/TOML-Parser)
+[![Build Status](https://travis-ci.org/karupanerura/TOML-Parser.svg?branch=master)](https://travis-ci.org/karupanerura/TOML-Parser)
 # NAME
 
 TOML::Parser - simple toml parser
@@ -94,3 +94,7 @@ it under the same terms as Perl itself.
 # AUTHOR
 
 karupanerura <karupa@cpan.org>
+
+# CONTRIBUTOR
+
+Olivier Mengué <dolmen@cpan.org>

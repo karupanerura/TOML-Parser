@@ -4,7 +4,7 @@
       "karupanerura <karupa@cpan.org>"
    ],
    "dynamic_config" : 0,
-   "generated_by" : "Minilla/v2.1.1, CPAN::Meta::Converter version 2.142690",
+   "generated_by" : "Minilla/v2.3.0, CPAN::Meta::Converter version 2.143240",
    "license" : [
       "perl_5"
    ],
@@ -74,5 +74,9 @@
       }
    },
    "version" : "0.04",
-   "x_authority" : "cpan:KARUPA"
+   "x_authority" : "cpan:KARUPA",
+   "x_contributors" : [
+      "Olivier Mengué <dolmen@cpan.org>",
+      "karupanerura <karupanerura@users.noreply.github.com>"
+   ]
 }

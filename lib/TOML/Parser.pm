@@ -274,4 +274,8 @@ it under the same terms as Perl itself.
 
 karupanerura E<lt>karupa@cpan.orgE<gt>
 
+=head1 CONTRIBUTOR
+
+Olivier Mengué E<lt>dolmen@cpan.orgE<gt>
+
 =cut
