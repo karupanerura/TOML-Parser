@@ -2,6 +2,10 @@ Revision history for Perl extension TOML-Parser
 
 {{$NEXT}}
 
+0.05 2015-02-18T06:19:11Z
+
+    - [FIXED] Dependency fixes (dolmen)
+
 0.04 2014-10-08T23:33:32Z
 
     - [FIXED] Allow "." in key name.
