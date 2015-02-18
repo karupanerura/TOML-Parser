@@ -30,7 +30,6 @@
          "requires" : {
             "CPAN::Meta" : "0",
             "CPAN::Meta::Prereqs" : "0",
-            "Module::Build" : "0",
             "Module::Build::Tiny" : "0.035"
          }
       },
@@ -49,6 +48,7 @@
       "runtime" : {
          "requires" : {
             "Encode" : "0",
+            "Exporter" : "5.57",
             "Types::Serialiser" : "0",
             "parent" : "0",
             "perl" : "5.008005"

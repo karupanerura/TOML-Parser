@@ -2,9 +2,8 @@ package TOML::Parser::Util;
 use 5.008005;
 use strict;
 use warnings;
-use utf8;
 
-use parent qw/Exporter/;
+use Exporter 5.57 'import';
 our @EXPORT_OK = qw/unescape_str/;
 
 sub unescape_str {
