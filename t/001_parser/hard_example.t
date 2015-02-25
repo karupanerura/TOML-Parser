@@ -3,7 +3,7 @@ use warnings;
 use utf8;
 
 use Test::More  tests => 2;
-use Storable qw/thaw/;
+use Storable 2.38 qw/thaw/;
 use MIME::Base64;
 
 use TOML::Parser;

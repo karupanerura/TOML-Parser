@@ -1,16 +1,16 @@
 requires 'Encode';
+requires 'Exporter', '5.57';
 requires 'Types::Serialiser';
 requires 'parent';
-requires 'Exporter', '5.57';
 requires 'perl', '5.008005';
 
 on configure => sub {
-    requires 'CPAN::Meta';
-    requires 'CPAN::Meta::Prereqs';
+    requires 'Module::Build::Tiny', '0.035';
 };
 
 on test => sub {
     requires 'MIME::Base64';
+    requires 'Storable', '2.38';
     requires 'Test::More', '0.98';
 };
 

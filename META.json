@@ -28,8 +28,6 @@
    "prereqs" : {
       "configure" : {
          "requires" : {
-            "CPAN::Meta" : "0",
-            "CPAN::Meta::Prereqs" : "0",
             "Module::Build::Tiny" : "0.035"
          }
       },
@@ -57,6 +55,7 @@
       "test" : {
          "requires" : {
             "MIME::Base64" : "0",
+            "Storable" : "2.38",
             "Test::More" : "0.98"
          }
       }
