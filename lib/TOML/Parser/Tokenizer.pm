@@ -18,6 +18,8 @@ BEGIN {
         boolean
         datetime
         string
+        multi_line_string_begin
+        multi_line_string_end
         array_begin
         array_end
     /;
@@ -47,6 +49,7 @@ sub grammar_regexp {
             integer  => qr{(-?[0-9]+)},
             boolean  => qr{(true|false)},
             string   => qr{(?:"(.*?)(?<!(?<!\\)\\)"|\'(.*?)(?<!(?<!\\)\\)\')},
+            mlstring => qr{("""|''')},
             array    => {
                 start => qr{\[},
                 sep   => qr{\s*,\s*},
@@ -131,6 +134,14 @@ sub _tokenize_value {
         $class->_skip_whitespace();
         return [TOKEN_BOOLEAN, $1];
     }
+    elsif (/\G$grammar_regexp->{value}->{mlstring}/mgc) {
+        warn "[TOKEN] BOOLEAN: $1" if DEBUG;
+        return (
+            [TOKEN_MULTI_LINE_STRING_BEGIN],
+            $class->_extract_multi_line_string($1),
+            [TOKEN_MULTI_LINE_STRING_END],
+        );
+    }
     elsif (/\G$grammar_regexp->{value}->{string}/mgc) {
         warn "[TOKEN] STRING: $1" if DEBUG;
         $class->_skip_whitespace();
@@ -145,9 +156,18 @@ sub _tokenize_value {
             [TOKEN_ARRAY_END],
         );
     }
-    else {
-        $class->_syntax_error();
+
+    $class->_syntax_error();
+}
+
+sub _extract_multi_line_string {
+    my ($class, $delimiter) = @_;
+    if (/\G(.+?)\Q$delimiter/smgc) {
+        warn "[TOKEN] MULTI LINE STRING: $1" if DEBUG;
+        $class->_skip_whitespace();
+        return [TOKEN_STRING, $1];
     }
+    $class->_syntax_error();
 }
 
 sub _tokenize_array {

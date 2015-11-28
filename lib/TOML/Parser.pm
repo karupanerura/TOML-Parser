@@ -140,6 +140,16 @@ sub _parse_value_token {
     elsif ($type eq TOKEN_STRING) {
         return unescape_str($val);
     }
+    elsif ($type eq TOKEN_MULTI_LINE_STRING_BEGIN) {
+        my $value = $self->_parse_value_token(shift @TOKENS);
+        $value =~ s/\A\s+//msg;
+        $value =~ s/\\\s+//msg;
+        if (my $token = shift @TOKENS) {
+            my ($type) = @$token;
+            return $value if $type eq TOKEN_MULTI_LINE_STRING_END;
+            die "Unexpected token: $type";
+        }
+    }
     elsif ($type eq TOKEN_ARRAY_BEGIN) {
         my @data;
         while (my $token = shift @TOKENS) {
@@ -148,9 +158,8 @@ sub _parse_value_token {
         }
         return \@data;
     }
-    else {
-        die "Unknown case. type:$type";
-    }
+
+    die "Unexpected token: $type";
 }
 
 sub inflate_datetime {
