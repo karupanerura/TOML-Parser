@@ -129,6 +129,7 @@ sub _parse_value_token {
         return; # pass through
     }
     elsif ($type eq TOKEN_INTEGER || $type eq TOKEN_FLOAT) {
+        $val =~ tr/_//d;
         return 0+$val;
     }
     elsif ($type eq TOKEN_BOOLEAN) {
