@@ -55,27 +55,47 @@ sub _parse_tokens {
     my $self = shift;
 
     while (my $token = shift @TOKENS) {
-        my ($type, $val) = @$token;
-        if ($type eq TOKEN_TABLE) {
-            $self->_parse_table($val);
-        }
-        elsif ($type eq TOKEN_ARRAY_OF_TABLE) {
-            $self->_parse_array_of_table($val);
-        }
-        elsif ($type eq TOKEN_KEY) {
-            my $token = shift @TOKENS;
-            die "Duplicate key. key:$val" if exists $CONTEXT->{$val};
-            $CONTEXT->{$val} = $self->_parse_value_token($token);
-        }
-        elsif ($type eq TOKEN_COMMENT) {
-            # pass through
-        }
-        else {
-            die "Unknown case. type:$type";
-        }
+        $self->_parse_token($token);
     }
 
     return $CONTEXT;
+}
+
+sub _parse_token {
+    my ($self, $token) = @_;
+
+    my ($type, $val) = @$token;
+    if ($type eq TOKEN_TABLE) {
+        $self->_parse_table($val);
+    }
+    elsif ($type eq TOKEN_ARRAY_OF_TABLE) {
+        $self->_parse_array_of_table($val);
+    }
+    elsif (my ($key, $value) = $self->_parse_key_and_value($token)) {
+        die "Duplicate key. key:$key" if exists $CONTEXT->{$key};
+        $CONTEXT->{$key} = $value;
+    }
+    elsif ($type eq TOKEN_COMMENT) {
+        # pass through
+    }
+    else {
+        die "Unknown case. type:$type";
+    }
+}
+
+sub _parse_key_and_value {
+    my ($self, $token) = @_;
+
+    my ($type, $val) = @$token;
+    if ($type eq TOKEN_KEY) {
+        my $token = shift @TOKENS;
+
+        my $key = $val;
+        my $value = $self->_parse_value_token($token);
+        return ($key, $value);
+    }
+
+    return;
 }
 
 sub _parse_table {
@@ -151,6 +171,16 @@ sub _parse_value_token {
             return $value if $type eq TOKEN_MULTI_LINE_STRING_END;
             die "Unexpected token: $type";
         }
+    }
+    elsif ($type eq TOKEN_INLINE_TABLE_BEGIN) {
+        my %data;
+        while (my $token = shift @TOKENS) {
+            last if $token->[0] eq TOKEN_INLINE_TABLE_END;
+            my ($key, $value) = $self->_parse_key_and_value($token);
+            die "Duplicate key. key:$key" if exists $data{$key};
+            $data{$key} = $value;
+        }
+        return \%data;
     }
     elsif ($type eq TOKEN_ARRAY_BEGIN) {
         my @data;

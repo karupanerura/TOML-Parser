@@ -20,6 +20,8 @@ BEGIN {
         string
         multi_line_string_begin
         multi_line_string_end
+        inline_table_begin
+        inline_table_end
         array_begin
         array_end
     /;
@@ -60,6 +62,11 @@ sub grammar_regexp {
             boolean  => qr{(true|false)},
             string   => qr{(?:"(.*?)(?<!(?<!\\)\\)"|\'(.*?)(?<!(?<!\\)\\)\')},
             mlstring => qr{("""|''')},
+            inline   => {
+                start => qr{\{},
+                sep   => qr{\s*,\s*},
+                end   => qr{\}},
+            },
             array    => {
                 start => qr{\[},
                 sep   => qr{\s*,\s*},
@@ -167,6 +174,15 @@ sub _tokenize_value {
         $class->_skip_whitespace();
         return [TOKEN_STRING, $1 || $2 || ''];
     }
+    elsif (/\G$grammar_regexp->{value}->{inline}->{start}/mgc) {
+        warn "[TOKEN] INLINE TABLE" if DEBUG;
+        $class->_skip_whitespace();
+        return (
+            [TOKEN_INLINE_TABLE_BEGIN],
+            $class->_tokenize_inline_table(),
+            [TOKEN_INLINE_TABLE_END],
+        );
+    }
     elsif (/\G$grammar_regexp->{value}->{array}->{start}/mgc) {
         warn "[TOKEN] ARRAY" if DEBUG;
         $class->_skip_whitespace();
@@ -272,6 +288,24 @@ sub _extract_multi_line_string {
         return [TOKEN_STRING, $1];
     }
     $class->_syntax_error();
+}
+
+sub _tokenize_inline_table {
+    my $class = shift;
+    my $grammar_regexp = $class->grammar_regexp()->{value}->{inline};
+    warn "[CALL] _tokenize_inline_table" if DEBUG;
+    return if /\G(?:$grammar_regexp->{sep})?$grammar_regexp->{end}/smgc;
+
+    my @tokens = $class->_tokenize_key_and_value();
+    while (/\G$grammar_regexp->{sep}/smgc || !/\G$grammar_regexp->{end}/mgc) {
+        last if /\G$grammar_regexp->{end}/mgc;
+        warn "[CONTEXT] _tokenize_inline_table [loop]" if DEBUG;
+        $class->_skip_whitespace();
+        push @tokens => $class->_tokenize_key_and_value();
+        $class->_skip_whitespace();
+    }
+
+    return @tokens;
 }
 
 sub _tokenize_array {
