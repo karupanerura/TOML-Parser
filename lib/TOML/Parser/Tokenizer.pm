@@ -40,7 +40,6 @@ BEGIN {
 sub grammar_regexp {
     return +{
         comment        => qr{#(.*)},
-        key            => qr{([^\s]+)\s*=},
         table          => {
             start => qr{\[},
             key   => qr{(?:"(.*?)(?<!(?<!\\)\\)"|\'(.*?)(?<!(?<!\\)\\)\'|([^.\s\\\]]+))},
@@ -53,6 +52,7 @@ sub grammar_regexp {
             sep   => qr{\.},
             end   => qr{\]\]},
         },
+        key            => qr{(?:"(.*?)(?<!(?<!\\)\\)"|\'(.*?)(?<!(?<!\\)\\)\'|([^\s]+))\s*=},
         value          => {
             datetime => qr{([0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z)},
             float    => qr{([-+]?(?:[0-9_]+(?:\.[0-9_]+)?[eE][-+]?[0-9_]+|[0-9_]*\.[0-9_]+))},
@@ -93,11 +93,8 @@ sub _tokenize {
         elsif (/\G$grammar_regexp->{table}->{start}/mgc) {
             push @tokens => $class->_tokenize_table();
         }
-        elsif (/\G$grammar_regexp->{key}/mgc) {
-            warn "[TOKEN] KEY: $1" if DEBUG;
-            $class->_skip_whitespace();
-            push @tokens => [TOKEN_KEY, $1];
-            push @tokens => $class->_tokenize_value();
+        elsif (my @t = $class->_tokenize_key_and_value()) {
+            push @tokens => @t;
         }
         elsif (/\G\s+/mgco) {
             # pass through
@@ -108,6 +105,23 @@ sub _tokenize {
         }
     }
     return @tokens;
+}
+
+sub _tokenize_key_and_value {
+    my $class = shift;
+    my $grammar_regexp = $class->grammar_regexp();
+
+    my @tokens;
+    if (/\G$grammar_regexp->{key}/mgc) {
+        my $key = $1 || $2 || $3;
+        warn "[TOKEN] KEY: $key" if DEBUG;
+        $class->_skip_whitespace();
+        push @tokens => [TOKEN_KEY, $key];
+        push @tokens => $class->_tokenize_value();
+        return @tokens;
+    }
+
+    return;
 }
 
 sub _tokenize_value {

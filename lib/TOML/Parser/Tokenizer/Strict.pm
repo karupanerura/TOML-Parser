@@ -14,6 +14,7 @@ sub grammar_regexp {
     $grammar_regexp->{array_of_table}        = {%{ $grammar_regexp->{array_of_table} }};
     $grammar_regexp->{table}->{key}          = qr{(?:"(?:.*?)(?<!(?<!\\)\\)"|[A-Za-z0-9_-]+)};
     $grammar_regexp->{array_of_table}->{key} = qr{(?:"(?:.*?)(?<!(?<!\\)\\)"|[A-Za-z0-9_-]+)};
+    $grammar_regexp->{key}                   = qr{(?:"(.*?)(?<!(?<!\\)\\)"|([A-Za-z0-9_-]+))\s*=};
     return $grammar_regexp;
 }
 
