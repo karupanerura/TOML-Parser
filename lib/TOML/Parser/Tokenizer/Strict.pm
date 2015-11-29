@@ -10,6 +10,10 @@ sub grammar_regexp {
     my $grammar_regexp = {%{ shift->SUPER::grammar_regexp() }};
     $grammar_regexp->{value} = {%{ $grammar_regexp->{value} }};
     $grammar_regexp->{value}->{string} = qr{"(.*?)(?<!(?<!\\)\\)"};
+    $grammar_regexp->{table}                 = {%{ $grammar_regexp->{table} }};
+    $grammar_regexp->{array_of_table}        = {%{ $grammar_regexp->{array_of_table} }};
+    $grammar_regexp->{table}->{key}          = qr{(?:"(?:.*?)(?<!(?<!\\)\\)"|[A-Za-z0-9_-]+)};
+    $grammar_regexp->{array_of_table}->{key} = qr{(?:"(?:.*?)(?<!(?<!\\)\\)"|[A-Za-z0-9_-]+)};
     return $grammar_regexp;
 }
 

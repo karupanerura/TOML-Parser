@@ -79,14 +79,15 @@ sub _parse_tokens {
 }
 
 sub _parse_table {
-    my ($self, $key) = @_;
+    my ($self, $keys) = @_;
+    my @keys = @$keys;
 
     local $CONTEXT = $ROOT;
-    for my $k (split /\./, $key) {
+    for my $k (@keys) {
         if (exists $CONTEXT->{$k}) {
             $CONTEXT = ref $CONTEXT->{$k} eq 'ARRAY' ? $CONTEXT->{$k}->[-1] :
                        ref $CONTEXT->{$k} eq 'HASH'  ? $CONTEXT->{$k}       :
-                       die "invalid structure. $key cannot be `Table`";
+                       die "invalid structure. @{[ join '.', @keys ]} cannot be `Table`";
         }
         else {
             $CONTEXT = $CONTEXT->{$k} ||= +{};
@@ -97,8 +98,8 @@ sub _parse_table {
 }
 
 sub _parse_array_of_table {
-    my ($self, $key) = @_;
-    my @keys     = split /\./, $key;
+    my ($self, $keys) = @_;
+    my @keys     = @$keys;
     my $last_key = pop @keys;
 
     local $CONTEXT = $ROOT;
@@ -106,7 +107,7 @@ sub _parse_array_of_table {
         if (exists $CONTEXT->{$k}) {
             $CONTEXT = ref $CONTEXT->{$k} eq 'ARRAY' ? $CONTEXT->{$k}->[-1] :
                        ref $CONTEXT->{$k} eq 'HASH'  ? $CONTEXT->{$k}       :
-                       die "invalid structure. $key cannot be `Array of table`.";
+                       die "invalid structure. @{[ join '.', @keys ]} cannot be `Array of table`.";
         }
         else {
             $CONTEXT = $CONTEXT->{$k} ||= +{};
@@ -114,7 +115,7 @@ sub _parse_array_of_table {
     }
 
     $CONTEXT->{$last_key} = [] unless exists $CONTEXT->{$last_key};
-    die "invalid structure. $key cannot be `Array of table`" unless ref $CONTEXT->{$last_key} eq 'ARRAY';
+    die "invalid structure. @{[ join '.', @keys ]} cannot be `Array of table`" unless ref $CONTEXT->{$last_key} eq 'ARRAY';
     push @{ $CONTEXT->{$last_key} } => $CONTEXT = {};
 
     $self->_parse_tokens();

@@ -40,9 +40,19 @@ BEGIN {
 sub grammar_regexp {
     return +{
         comment        => qr{#(.*)},
-        table          => qr{\[([^.\s\\\]]+(?:\.[^.\s\\\]]+)*)\]},
-        array_of_table => qr{\[\[([^.\s\\\]]+(?:\.[^.\s\\\]]+)*)\]\]},
         key            => qr{([^\s]+)\s*=},
+        table          => {
+            start => qr{\[},
+            key   => qr{(?:"(.*?)(?<!(?<!\\)\\)"|\'(.*?)(?<!(?<!\\)\\)\'|([^.\s\\\]]+))},
+            sep   => qr{\.},
+            end   => qr{\]},
+        },
+        array_of_table => {
+            start => qr{\[\[},
+            key   => qr{(?:"(.*?)(?<!(?<!\\)\\)"|\'(.*?)(?<!(?<!\\)\\)\'|([^.\s\\\]]+))},
+            sep   => qr{\.},
+            end   => qr{\]\]},
+        },
         value          => {
             datetime => qr{([0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z)},
             float    => qr{([-+]?(?:[0-9_]+(?:\.[0-9_]+)?[eE][-+]?[0-9_]+|[0-9_]*\.[0-9_]+))},
@@ -77,15 +87,11 @@ sub _tokenize {
             $class->_skip_whitespace();
             push @tokens => [TOKEN_COMMENT, $1 || ''];
         }
-        elsif (/\G$grammar_regexp->{array_of_table}/mgc) {
-            warn "[TOKEN] ARRAY_OF_TABLE: $1" if DEBUG;
-            $class->_skip_whitespace();
-            push @tokens => [TOKEN_ARRAY_OF_TABLE, $1];
+        elsif (/\G$grammar_regexp->{array_of_table}->{start}/mgc) {
+            push @tokens => $class->_tokenize_array_of_table();
         }
-        elsif (/\G$grammar_regexp->{table}/mgc) {
-            warn "[TOKEN] TABLE: $1" if DEBUG;
-            $class->_skip_whitespace();
-            push @tokens => [TOKEN_TABLE, $1];
+        elsif (/\G$grammar_regexp->{table}->{start}/mgc) {
+            push @tokens => $class->_tokenize_table();
         }
         elsif (/\G$grammar_regexp->{key}/mgc) {
             warn "[TOKEN] KEY: $1" if DEBUG;
@@ -158,6 +164,90 @@ sub _tokenize_value {
     }
 
     $class->_syntax_error();
+}
+
+sub _tokenize_table {
+    my $class = shift;
+
+    my $grammar_regexp = $class->grammar_regexp()->{table};
+    warn "[CALL] _tokenize_table" if DEBUG;
+
+    $class->_skip_whitespace();
+
+    my @expected = ($grammar_regexp->{key});
+
+    my @keys;
+ LOOP:
+    while (1) {
+        for my $rx (@expected) {
+            if (/\G$rx/smgc) {
+                if ($rx eq $grammar_regexp->{key}) {
+                    my $key = $1 || $2 || $3;
+                    warn "[TOKEN] table key: $key" if DEBUG;
+                    push @keys => $key;
+                    @expected = ($grammar_regexp->{sep}, $grammar_regexp->{end});
+                }
+                elsif ($rx eq $grammar_regexp->{sep}) {
+                    warn "[TOKEN] table key separator" if DEBUG;
+                    @expected = ($grammar_regexp->{key});
+                }
+                elsif ($rx eq $grammar_regexp->{end}) {
+                    warn "[TOKEN] table key end" if DEBUG;
+                    @expected = ();
+                    last LOOP;
+                }
+                $class->_skip_whitespace();
+                next LOOP;
+            }
+        }
+
+        $class->_syntax_error();
+    }
+
+    warn "[TOKEN] TABLE: @{[ join '.', @keys ]}" if DEBUG;
+    return [TOKEN_TABLE, \@keys];
+}
+
+sub _tokenize_array_of_table {
+    my $class = shift;
+
+    my $grammar_regexp = $class->grammar_regexp()->{array_of_table};
+    warn "[CALL] _tokenize_array_of_table" if DEBUG;
+
+    $class->_skip_whitespace();
+
+    my @expected = ($grammar_regexp->{key});
+
+    my @keys;
+ LOOP:
+    while (1) {
+        for my $rx (@expected) {
+            if (/\G$rx/smgc) {
+                if ($rx eq $grammar_regexp->{key}) {
+                    my $key = $1 || $2 || $3;
+                    warn "[TOKEN] table key: $key" if DEBUG;
+                    push @keys => $key;
+                    @expected = ($grammar_regexp->{sep}, $grammar_regexp->{end});
+                }
+                elsif ($rx eq $grammar_regexp->{sep}) {
+                    warn "[TOKEN] table key separator" if DEBUG;
+                    @expected = ($grammar_regexp->{key});
+                }
+                elsif ($rx eq $grammar_regexp->{end}) {
+                    warn "[TOKEN] table key end" if DEBUG;
+                    @expected = ();
+                    last LOOP;
+                }
+                $class->_skip_whitespace();
+                next LOOP;
+            }
+        }
+
+        $class->_syntax_error();
+    }
+
+    warn "[TOKEN] ARRAY_OF_TABLE: @{[ join '.', @keys ]}" if DEBUG;
+    return [TOKEN_ARRAY_OF_TABLE, \@keys];
 }
 
 sub _extract_multi_line_string {
