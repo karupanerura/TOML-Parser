@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/karupanerura/TOML-Parser.svg?branch=master)](https://travis-ci.org/karupanerura/TOML-Parser)
+[![Build Status](https://travis-ci.org/karupanerura/TOML-Parser.svg?branch=master)](https://travis-ci.org/karupanerura/TOML-Parser) [![Coverage Status](http://codecov.io/github/karupanerura/TOML-Parser/coverage.svg?branch=master)](https://codecov.io/github/karupanerura/TOML-Parser?branch=master)
 # NAME
 
 TOML::Parser - simple toml parser
