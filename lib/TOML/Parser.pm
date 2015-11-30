@@ -184,9 +184,15 @@ sub _parse_value_token {
     }
     elsif ($type eq TOKEN_ARRAY_BEGIN) {
         my @data;
+
+        my $last_token;
         while (my $token = shift @TOKENS) {
             last if $token->[0] eq TOKEN_ARRAY_END;
+            if ($self->{strict_mode} && $token->[0] ne TOKEN_COMMENT) {
+                die "Unexpected token: $token->[0]" if defined $last_token && $token->[0] ne $last_token->[0];
+            }
             push @data => $self->_parse_value_token($token);
+            $last_token = $token;
         }
         return \@data;
     }
