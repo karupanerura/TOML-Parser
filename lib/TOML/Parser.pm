@@ -55,38 +55,59 @@ sub _parse_tokens {
     my $self = shift;
 
     while (my $token = shift @TOKENS) {
-        my ($type, $val) = @$token;
-        if ($type eq TOKEN_TABLE) {
-            $self->_parse_table($val);
-        }
-        elsif ($type eq TOKEN_ARRAY_OF_TABLE) {
-            $self->_parse_array_of_table($val);
-        }
-        elsif ($type eq TOKEN_KEY) {
-            my $token = shift @TOKENS;
-            die "Duplicate key. key:$val" if exists $CONTEXT->{$val};
-            $CONTEXT->{$val} = $self->_parse_value_token($token);
-        }
-        elsif ($type eq TOKEN_COMMENT) {
-            # pass through
-        }
-        else {
-            die "Unknown case. type:$type";
-        }
+        $self->_parse_token($token);
     }
 
     return $CONTEXT;
 }
 
+sub _parse_token {
+    my ($self, $token) = @_;
+
+    my ($type, $val) = @$token;
+    if ($type eq TOKEN_TABLE) {
+        $self->_parse_table($val);
+    }
+    elsif ($type eq TOKEN_ARRAY_OF_TABLE) {
+        $self->_parse_array_of_table($val);
+    }
+    elsif (my ($key, $value) = $self->_parse_key_and_value($token)) {
+        die "Duplicate key. key:$key" if exists $CONTEXT->{$key};
+        $CONTEXT->{$key} = $value;
+    }
+    elsif ($type eq TOKEN_COMMENT) {
+        # pass through
+    }
+    else {
+        die "Unknown case. type:$type";
+    }
+}
+
+sub _parse_key_and_value {
+    my ($self, $token) = @_;
+
+    my ($type, $val) = @$token;
+    if ($type eq TOKEN_KEY) {
+        my $token = shift @TOKENS;
+
+        my $key = $val;
+        my $value = $self->_parse_value_token($token);
+        return ($key, $value);
+    }
+
+    return;
+}
+
 sub _parse_table {
-    my ($self, $key) = @_;
+    my ($self, $keys) = @_;
+    my @keys = @$keys;
 
     local $CONTEXT = $ROOT;
-    for my $k (split /\./, $key) {
+    for my $k (@keys) {
         if (exists $CONTEXT->{$k}) {
             $CONTEXT = ref $CONTEXT->{$k} eq 'ARRAY' ? $CONTEXT->{$k}->[-1] :
                        ref $CONTEXT->{$k} eq 'HASH'  ? $CONTEXT->{$k}       :
-                       die "invalid structure. $key cannot be `Table`";
+                       die "invalid structure. @{[ join '.', @keys ]} cannot be `Table`";
         }
         else {
             $CONTEXT = $CONTEXT->{$k} ||= +{};
@@ -97,8 +118,8 @@ sub _parse_table {
 }
 
 sub _parse_array_of_table {
-    my ($self, $key) = @_;
-    my @keys     = split /\./, $key;
+    my ($self, $keys) = @_;
+    my @keys     = @$keys;
     my $last_key = pop @keys;
 
     local $CONTEXT = $ROOT;
@@ -106,7 +127,7 @@ sub _parse_array_of_table {
         if (exists $CONTEXT->{$k}) {
             $CONTEXT = ref $CONTEXT->{$k} eq 'ARRAY' ? $CONTEXT->{$k}->[-1] :
                        ref $CONTEXT->{$k} eq 'HASH'  ? $CONTEXT->{$k}       :
-                       die "invalid structure. $key cannot be `Array of table`.";
+                       die "invalid structure. @{[ join '.', @keys ]} cannot be `Array of table`.";
         }
         else {
             $CONTEXT = $CONTEXT->{$k} ||= +{};
@@ -114,7 +135,7 @@ sub _parse_array_of_table {
     }
 
     $CONTEXT->{$last_key} = [] unless exists $CONTEXT->{$last_key};
-    die "invalid structure. $key cannot be `Array of table`" unless ref $CONTEXT->{$last_key} eq 'ARRAY';
+    die "invalid structure. @{[ join '.', @keys ]} cannot be `Array of table`" unless ref $CONTEXT->{$last_key} eq 'ARRAY';
     push @{ $CONTEXT->{$last_key} } => $CONTEXT = {};
 
     $self->_parse_tokens();
@@ -129,6 +150,7 @@ sub _parse_value_token {
         return; # pass through
     }
     elsif ($type eq TOKEN_INTEGER || $type eq TOKEN_FLOAT) {
+        $val =~ tr/_//d;
         return 0+$val;
     }
     elsif ($type eq TOKEN_BOOLEAN) {
@@ -140,6 +162,26 @@ sub _parse_value_token {
     elsif ($type eq TOKEN_STRING) {
         return unescape_str($val);
     }
+    elsif ($type eq TOKEN_MULTI_LINE_STRING_BEGIN) {
+        my $value = $self->_parse_value_token(shift @TOKENS);
+        $value =~ s/\A\s+//msg;
+        $value =~ s/\\\s+//msg;
+        if (my $token = shift @TOKENS) {
+            my ($type) = @$token;
+            return $value if $type eq TOKEN_MULTI_LINE_STRING_END;
+            die "Unexpected token: $type";
+        }
+    }
+    elsif ($type eq TOKEN_INLINE_TABLE_BEGIN) {
+        my %data;
+        while (my $token = shift @TOKENS) {
+            last if $token->[0] eq TOKEN_INLINE_TABLE_END;
+            my ($key, $value) = $self->_parse_key_and_value($token);
+            die "Duplicate key. key:$key" if exists $data{$key};
+            $data{$key} = $value;
+        }
+        return \%data;
+    }
     elsif ($type eq TOKEN_ARRAY_BEGIN) {
         my @data;
         while (my $token = shift @TOKENS) {
@@ -148,9 +190,8 @@ sub _parse_value_token {
         }
         return \@data;
     }
-    else {
-        die "Unknown case. type:$type";
-    }
+
+    die "Unexpected token: $type";
 }
 
 sub inflate_datetime {
@@ -184,7 +225,9 @@ TOML::Parser - simple toml parser
 TOML::Parser is a simple toml parser.
 
 This data structure complies with the tests
-provided at L<https://github.com/mojombo/toml/tree/master/tests>.
+provided at L<https://github.com/toml-lang/toml/tree/v0.4.0/tests>.
+
+The v0.4.0 specification is supported.
 
 =head1 METHODS
 

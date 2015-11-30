@@ -15,7 +15,9 @@ TOML::Parser - simple toml parser
 TOML::Parser is a simple toml parser.
 
 This data structure complies with the tests
-provided at [https://github.com/mojombo/toml/tree/master/tests](https://github.com/mojombo/toml/tree/master/tests).
+provided at [https://github.com/toml-lang/toml/tree/v0.4.0/tests](https://github.com/toml-lang/toml/tree/v0.4.0/tests).
+
+The v0.4.0 specification is supported.
 
 # METHODS
 
@@ -93,8 +95,8 @@ it under the same terms as Perl itself.
 
 # AUTHOR
 
-karupanerura <karupa@cpan.org>
+karupanerura &lt;karupa@cpan.org>
 
 # CONTRIBUTOR
 
-Olivier Mengué <dolmen@cpan.org>
+Olivier Mengué &lt;dolmen@cpan.org>

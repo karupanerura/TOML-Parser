@@ -20,6 +20,9 @@ sub unescape_str {
     $str =~ s{\\u([0-9A-Fa-f]{4})}{# unicode         (U+XXXX)
         chr hex $1
     }xmgeo;
+    $str =~ s{\\U([0-9A-Fa-f]{8})}{# unicode         (U+XXXXXXXX)
+        chr hex $1
+    }xmgeo;
 
     return $str;
 }
