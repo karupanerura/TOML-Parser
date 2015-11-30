@@ -346,8 +346,9 @@ sub _error {
         $start = pos $src;
         $line++;
     }
-    my $end   = pos $src;
-    my $len   = pos() - $start - 1;
+    my $end = pos $src;
+    my $len = pos() - $start;
+    $len-- if $len > 0;
 
     my $trace = join "\n",
         "${msg}: line:$line",
