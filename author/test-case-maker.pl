@@ -39,8 +39,8 @@ my $expected = thaw(decode_base64(<<'__EXPECTED__'));
 %s
 __EXPECTED__
 
-for my $strict (0, 1) {
-    my $parser = TOML::Parser->new(inflate_datetime => \&inflate_datetime, strict => $strict);
+for my $strict_mode (0, 1) {
+    my $parser = TOML::Parser->new(inflate_datetime => \&inflate_datetime, strict_mode => $strict_mode);
     my $data   = $parser->parse($toml);
     note explain { data => $data, expected => $expected } if $ENV{AUTHOR_TESTING};
     is_deeply $data => $expected, "%s: strict: $strict";

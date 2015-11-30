@@ -25,7 +25,7 @@ AAABCghwbGFudGFpbgAAAARuYW1lAAAAB3ZhcmlldHkKBmJhbmFuYQAAAARuYW1lAAAABWZydWl0
 __EXPECTED__
 
 for my $strict (0, 1) {
-    my $parser = TOML::Parser->new(inflate_datetime => \&inflate_datetime, strict => $strict);
+    my $parser = TOML::Parser->new(inflate_datetime => \&inflate_datetime, strict_mode => $strict);
     my $data   = $parser->parse($toml);
     note explain { data => $data, expected => $expected } if $ENV{AUTHOR_TESTING};
     is_deeply $data => $expected, "t/toml/example_fruit.toml: strict: $strict";

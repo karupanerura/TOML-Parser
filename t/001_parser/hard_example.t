@@ -28,12 +28,13 @@ AAN0aGU=
 
 __EXPECTED__
 
-for my $strict (0, 1) {
-    my $parser = TOML::Parser->new(inflate_datetime => \&inflate_datetime, strict => $strict);
-    my $data   = $parser->parse($toml);
-    note explain { data => $data, expected => $expected } if $ENV{AUTHOR_TESTING};
-    is_deeply $data => $expected, "t/toml/hard_example.toml: strict: $strict";
-}
+my $parser = TOML::Parser->new(inflate_datetime => \&inflate_datetime);
+my $data   = $parser->parse($toml);
+note explain { data => $data, expected => $expected } if $ENV{AUTHOR_TESTING};
+is_deeply $data => $expected, "t/toml/hard_example.toml";
+
+eval { TOML::Parser->new(inflate_datetime => \&inflate_datetime, strict_mode => 1)->parse($toml) };
+like $@, qr{\ASyntax Error: line:16}m;
 
 __DATA__
 # Test file for TOML
