@@ -1,5 +1,5 @@
 use strict;
-use Test::More tests => 9;
+use Test::More tests => 15;
 
 use TOML::Parser;
 
@@ -70,3 +70,47 @@ eval {
 ...
 };
 like $@, qr/\ASyntax Error: line:1/m, 'detect syntax error' or diag $@;
+
+eval {
+    TOML::Parser->new->parse(<<'...');
+[[]]
+...
+};
+like $@, qr/\ASyntax Error: line:1/m, 'detect syntax error' or diag $@;
+
+eval {
+    TOML::Parser->new->parse(<<'...');
+[[a.]]
+...
+};
+like $@, qr/\ASyntax Error: line:1/m, 'detect syntax error' or diag $@;
+
+eval {
+    TOML::Parser->new->parse(<<'...');
+[[a..b]]
+...
+};
+like $@, qr/\ASyntax Error: line:1/m, 'detect syntax error' or diag $@;
+
+eval {
+    TOML::Parser->new->parse(<<'...');
+[[.b]]
+...
+};
+like $@, qr/\ASyntax Error: line:1/m, 'detect syntax error' or diag $@;
+
+eval {
+    TOML::Parser->new->parse(<<'...');
+[[.]]
+...
+};
+like $@, qr/\ASyntax Error: line:1/m, 'detect syntax error' or diag $@;
+
+eval {
+    TOML::Parser->new->parse(<<'...');
+key = """
+  never ending
+  multi line string
+...
+};
+like $@, qr/\ASyntax Error: line:2/m, 'detect syntax error' or diag $@;
