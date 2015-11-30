@@ -72,7 +72,7 @@
          "web" : "https://github.com/karupanerura/TOML-Parser"
       }
    },
-   "version" : "0.05",
+   "version" : "0.06",
    "x_authority" : "cpan:KARUPA",
    "x_contributors" : [
       "Olivier Mengué <dolmen@cpan.org>",

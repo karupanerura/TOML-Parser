@@ -4,7 +4,7 @@ use strict;
 use warnings;
 use Encode;
 
-our $VERSION = "0.05";
+our $VERSION = "0.06";
 
 use TOML::Parser::Tokenizer qw/:constant/;
 use TOML::Parser::Tokenizer::Strict;
@@ -214,6 +214,8 @@ sub inflate_boolean {
 __END__
 
 =encoding utf-8
+
+=for stopwords versa
 
 =head1 NAME
 

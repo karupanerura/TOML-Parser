@@ -2,6 +2,11 @@ Revision history for Perl extension TOML-Parser
 
 {{$NEXT}}
 
+0.06 2015-11-30T16:32:44Z
+
+    - [FIXED] strict_mode is broken. (tests for strict_mode didn't worked.)
+    - [FEATURE] The v.0.4.0 spec is supported.
+
 0.05 2015-02-18T06:19:11Z
 
     - [FIXED] Dependency fixes (dolmen)
