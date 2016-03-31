@@ -17,6 +17,6 @@ is_deeply $data, {
 };
 
 __DATA__
-string_zero = "0"
-string_one  = "1"
-string_two  = "2"
+string_zero="0"
+string_one="1"
+string_two="2"
