@@ -172,7 +172,7 @@ sub _tokenize_value {
     elsif (/\G$grammar_regexp->{value}->{string}/mgc) {
         warn "[TOKEN] STRING: $1" if DEBUG;
         $class->_skip_whitespace();
-        return [TOKEN_STRING, $1 || $2 || ''];
+        return [TOKEN_STRING, defined $1 ? $1 : defined $2 ? $2 : ''];
     }
     elsif (/\G$grammar_regexp->{value}->{inline}->{start}/mgc) {
         warn "[TOKEN] INLINE TABLE" if DEBUG;
