@@ -2,6 +2,10 @@ Revision history for Perl extension TOML-Parser
 
 {{$NEXT}}
 
+0.07 2016-04-01T02:10:39Z
+
+   - [FIXED] Parser produces "" for value "0" (thanks for yowcow)
+
 0.06 2015-11-30T16:32:44Z
 
     - [FIXED] strict_mode is broken. (tests for strict_mode didn't worked.)
