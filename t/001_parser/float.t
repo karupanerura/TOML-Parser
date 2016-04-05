@@ -3,6 +3,7 @@ use warnings;
 use utf8;
 
 use Test::More  tests => 2;
+use t::Util;
 use Storable qw/thaw/;
 use MIME::Base64;
 
@@ -17,17 +18,17 @@ sub inflate_datetime {
 my $toml = do { local $/; <DATA> };
 
 my $expected = thaw(decode_base64(<<'__EXPECTED__'));
-BQoDAAAACQoGMy4xNDE1AAAABGtleTIIgQAAAARrZXkxChA5MjI0NjE3LjQ0NTk5MTIzAAAABGtl
-eTgKBTVlKzIyAAAABGtleTQKBS0wLjAyAAAABGtleTYKCTYuNjI2ZS0zNAAAAARrZXk3CgUtMC4w
-MQAAAARrZXkzCQAPQkAAAAAEa2V5NQoGMWUrMTAwAAAABGtleTk=
+BQoZAAAAAAkIgQIAAAAEa2V5MQoGMy4xNDE1AgAAAARrZXkyCQAPQkACAAAABGtleTUKBS0wLjAy
+AgAAAARrZXk2Cgk2LjYyNmUtMzQCAAAABGtleTcKBjFlKzEwMAIAAAAEa2V5OQoTOTIyNDYxNy40
+NDU5OTEyMjgzMQIAAAAEa2V5OAoFNWUrMjICAAAABGtleTQKBS0wLjAxAgAAAARrZXkz
 
 __EXPECTED__
 
-for my $strict (0, 1) {
-    my $parser = TOML::Parser->new(inflate_datetime => \&inflate_datetime, strict_mode => $strict);
+for my $strict_mode (0, 1) {
+    my $parser = TOML::Parser->new(inflate_datetime => \&inflate_datetime, strict_mode => $strict_mode);
     my $data   = $parser->parse($toml);
     note explain { data => $data, expected => $expected } if $ENV{AUTHOR_TESTING};
-    is_deeply $data => $expected, "float.toml: strict: $strict";
+    cmp_fuzzy_deeply $data => $expected, "t/toml/float.toml: strict_mode: $strict_mode";
 }
 
 __DATA__

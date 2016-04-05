@@ -12,6 +12,7 @@ on test => sub {
     requires 'MIME::Base64';
     requires 'Storable', '2.38';
     requires 'Test::More', '0.98';
+    requires 'Math::Round';
 };
 
 on develop => sub {
