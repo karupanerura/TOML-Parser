@@ -2,39 +2,34 @@ use strict;
 use warnings;
 use utf8;
 
-use Test::More  tests => 2;
+use Test::More tests => 2;
+use t::Util;
 use Storable 2.38 qw/thaw/;
 use MIME::Base64;
 
 use TOML::Parser;
 
-sub inflate_datetime {
-    my $dt = shift;
-    $dt =~ s/Z$/+00:00/;
-    return $dt;
-}
-
 my $toml = do { local $/; <DATA> };
 
 my $expected = thaw(decode_base64(<<'__EXPECTED__'));
-BQkDAAAAAQQDAAAAAgQDAAAABQQCAAAAAgoCXSAKAyAjIAAAAAp0ZXN0X2FycmF5CiAgU2FtZSB0
-aGluZywgYnV0IHdpdGggYSBzdHJpbmcgIwAAABNhbm90aGVyX3Rlc3Rfc3RyaW5nCi8gQW5kIHdo
-ZW4gIidzIGFyZSBpbiB0aGUgc3RyaW5nLCBhbG9uZyB3aXRoICMgIgAAABJoYXJkZXJfdGVzdF9z
-dHJpbmcEAgAAAAIKFVRlc3QgIzExIF1wcm92ZWQgdGhhdAobRXhwZXJpbWVudCAjOSB3YXMgYSBz
-dWNjZXNzAAAAC3Rlc3RfYXJyYXkyBAMAAAACCihZb3UgZG9uJ3QgdGhpbmsgc29tZSB1c2VyIHdv
-bid0IGRvIHRoYXQ/AAAABXdoYXQ/BAIAAAABCgFdAAAAEG11bHRpX2xpbmVfYXJyYXkAAAAEYml0
-IwAAAARoYXJkCh1Zb3UnbGwgaGF0ZSBtZSBhZnRlciB0aGlzIC0gIwAAAAt0ZXN0X3N0cmluZwAA
-AAN0aGU=
+BQoZAAAAAAEEGQAAAAACFx1Zb3UnbGwgaGF0ZSBtZSBhZnRlciB0aGlzIC0gIwIAAAALdGVzdF9z
+dHJpbmcEGQAAAAAFFyAgU2FtZSB0aGluZywgYnV0IHdpdGggYSBzdHJpbmcgIwIAAAATYW5vdGhl
+cl90ZXN0X3N0cmluZwQCAAAAAhcCXSAXAyAjIAIAAAAKdGVzdF9hcnJheQQCAAAAAhcVVGVzdCAj
+MTEgXXByb3ZlZCB0aGF0FxtFeHBlcmltZW50ICM5IHdhcyBhIHN1Y2Nlc3MCAAAAC3Rlc3RfYXJy
+YXkyFy8gQW5kIHdoZW4gIidzIGFyZSBpbiB0aGUgc3RyaW5nLCBhbG9uZyB3aXRoICMgIgIAAAAS
+aGFyZGVyX3Rlc3Rfc3RyaW5nBBkAAAAAAhcoWW91IGRvbid0IHRoaW5rIHNvbWUgdXNlciB3b24n
+dCBkbyB0aGF0PwIAAAAFd2hhdD8EAgAAAAEXAV0CAAAAEG11bHRpX2xpbmVfYXJyYXkCAAAABGJp
+dCMCAAAABGhhcmQCAAAAA3RoZQ==
 
 __EXPECTED__
 
 my $parser = TOML::Parser->new(inflate_datetime => \&inflate_datetime);
 my $data   = $parser->parse($toml);
 note explain { data => $data, expected => $expected } if $ENV{AUTHOR_TESTING};
-is_deeply $data => $expected, "t/toml/hard_example.toml";
+cmp_fuzzy_deeply $data => $expected, 't/toml/hard_example.toml: strict_mode: 0';
 
-eval { TOML::Parser->new(inflate_datetime => \&inflate_datetime, strict_mode => 1)->parse($toml) };
-like $@, qr{\ASyntax Error: line:16}m;
+eval { TOML::Parser->new(strict_mode => 1)->parse($toml) };
+like $@, qr{\ASyntax Error: line:16}m, 't/toml/hard_example.toml: strict_mode: 1';
 
 __DATA__
 # Test file for TOML
@@ -70,5 +65,3 @@ test_string = "You'll hate me after this - #"          # " Annoying, isn't it?
 #         and here"
 #         ]     End of array comment, forgot the #
 #number = 3.14  pi <--again forgot the #         
-
-

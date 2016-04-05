@@ -2,36 +2,31 @@ use strict;
 use warnings;
 use utf8;
 
-use Test::More  tests => 2;
-use Storable qw/thaw/;
+use Test::More tests => 2;
+use t::Util;
+use Storable 2.38 qw/thaw/;
 use MIME::Base64;
 
 use TOML::Parser;
 
-sub inflate_datetime {
-    my $dt = shift;
-    $dt =~ s/Z$/+00:00/;
-    return $dt;
-}
-
 my $toml = do { local $/; <DATA> };
 
 my $expected = thaw(decode_base64(<<'__EXPECTED__'));
-BQoDAAAABgoeUm9zZXMgYXJlIHJlZApWaW9sZXRzIGFyZSBibHVlAAAABGtleTAKLFRoZSBxdWlj
-ayBicm93biBmb3gganVtcHMgb3ZlciB0aGUgbGF6eSBkb2cuAAAABGtleTEKLFRoZSBxdWljayBi
-cm93biBmb3gganVtcHMgb3ZlciB0aGUgbGF6eSBkb2cuAAAABGtleTMKX1RoZSBmaXJzdCBuZXds
-aW5lIGlzCnRyaW1tZWQgaW4gcmF3IHN0cmluZ3MuCiAgIEFsbCBvdGhlciB3aGl0ZXNwYWNlCiAg
-ICAgIGlzIHByZXNlcnZlZC4KICAgICAgAAAABWxpbmVzCixUaGUgcXVpY2sgYnJvd24gZm94IGp1
-bXBzIG92ZXIgdGhlIGxhenkgZG9nLgAAAARrZXkyChxJIFtkd11vbid0IG5lZWQgXGR7Mn0gYXBw
-bGVzAAAABnJlZ2V4Mg==
+BQoZAAAAAAYXHEkgW2R3XW9uJ3QgbmVlZCBcZHsyfSBhcHBsZXMCAAAABnJlZ2V4MhcsVGhlIHF1
+aWNrIGJyb3duIGZveCBqdW1wcyBvdmVyIHRoZSBsYXp5IGRvZy4CAAAABGtleTIXHlJvc2VzIGFy
+ZSByZWQKVmlvbGV0cyBhcmUgYmx1ZQIAAAAEa2V5MBdfVGhlIGZpcnN0IG5ld2xpbmUgaXMKdHJp
+bW1lZCBpbiByYXcgc3RyaW5ncy4KICAgQWxsIG90aGVyIHdoaXRlc3BhY2UKICAgICAgaXMgcHJl
+c2VydmVkLgogICAgICACAAAABWxpbmVzFyxUaGUgcXVpY2sgYnJvd24gZm94IGp1bXBzIG92ZXIg
+dGhlIGxhenkgZG9nLgIAAAAEa2V5MRcsVGhlIHF1aWNrIGJyb3duIGZveCBqdW1wcyBvdmVyIHRo
+ZSBsYXp5IGRvZy4CAAAABGtleTM=
 
 __EXPECTED__
 
-for my $strict (0, 1) {
-    my $parser = TOML::Parser->new(inflate_datetime => \&inflate_datetime, strict_mode => $strict);
+for my $strict_mode (0, 1) {
+    my $parser = TOML::Parser->new(strict_mode => $strict_mode);
     my $data   = $parser->parse($toml);
     note explain { data => $data, expected => $expected } if $ENV{AUTHOR_TESTING};
-    is_deeply $data => $expected, "multi_line_string.toml: strict: $strict";
+    cmp_fuzzy_deeply $data => $expected, "t/toml/multi_line_string.toml: strict_mode: $strict_mode";
 }
 
 __DATA__

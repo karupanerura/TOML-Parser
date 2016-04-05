@@ -1,0 +1,4 @@
+string1='foobar'
+string2="barbaz"
+string3='foo"bar'
+string4="bar'baz"

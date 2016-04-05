@@ -3,35 +3,29 @@ use warnings;
 use utf8;
 
 use Test::More tests => 2;
+use t::Util;
+use Storable 2.38 qw/thaw/;
+use MIME::Base64;
 
 use TOML::Parser;
 
-sub inflate_datetime {
-    my $dt = shift;
-    $dt =~ s/Z$/+00:00/;
-    return $dt;
-}
-
 my $toml = do { local $/; <DATA> };
 
-for my $strict (0, 1) {
-    my $parser = TOML::Parser->new(inflate_datetime => \&inflate_datetime, strict_mode => $strict);
-    my $data = $parser->parse($toml);
+my $expected = thaw(decode_base64(<<'__EXPECTED__'));
+BQoZAAAAAAQEGQAAAAADFwExAgAAAAxkb3VibGVfcXVvdGUXATECAAAADHNpbmdsZV9xdW90ZRcB
+MQIAAAAKbXVsdGlfbGluZQIAAAADb25lBBkAAAAAAxcAAgAAAAptdWx0aV9saW5lFwACAAAADHNp
+bmdsZV9xdW90ZRcAAgAAAAxkb3VibGVfcXVvdGUCAAAABWVtcHR5BBkAAAAAAxcBMgIAAAAKbXVs
+dGlfbGluZRcBMgIAAAAMc2luZ2xlX3F1b3RlFwEyAgAAAAxkb3VibGVfcXVvdGUCAAAAA3R3bwQZ
+AAAAAAMXATACAAAADHNpbmdsZV9xdW90ZRcBMAIAAAAMZG91YmxlX3F1b3RlFwEwAgAAAAptdWx0
+aV9saW5lAgAAAAR6ZXJv
 
-    is_deeply $data, {
-        empty => {
-            map { $_ => '' } qw/double_quote single_quote multi_line/,
-        },
-        zero => {
-            map { $_ => '0' } qw/double_quote single_quote multi_line/,
-        },
-        one => {
-            map { $_ => '1' } qw/double_quote single_quote multi_line/,
-        },
-        two => {
-            map { $_ => '2' } qw/double_quote single_quote multi_line/,
-        },
-    };
+__EXPECTED__
+
+for my $strict_mode (0, 1) {
+    my $parser = TOML::Parser->new(strict_mode => $strict_mode);
+    my $data   = $parser->parse($toml);
+    note explain { data => $data, expected => $expected } if $ENV{AUTHOR_TESTING};
+    cmp_fuzzy_deeply $data => $expected, "t/toml/string_zero.toml: strict_mode: $strict_mode";
 }
 
 __DATA__
