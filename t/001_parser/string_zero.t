@@ -18,15 +18,43 @@ for my $strict (0, 1) {
     my $parser = TOML::Parser->new(inflate_datetime => \&inflate_datetime, strict_mode => $strict);
     my $data = $parser->parse($toml);
 
-    is_deeply $data,
-        {
-        string_zero => '0',
-        string_one  => '1',
-        string_two  => '2',
-        };
+    is_deeply $data, {
+        empty => {
+            map { $_ => '' } qw/double_quote single_quote multi_line/,
+        },
+        zero => {
+            map { $_ => '0' } qw/double_quote single_quote multi_line/,
+        },
+        one => {
+            map { $_ => '1' } qw/double_quote single_quote multi_line/,
+        },
+        two => {
+            map { $_ => '2' } qw/double_quote single_quote multi_line/,
+        },
+    };
 }
 
 __DATA__
-string_zero="0"
-string_one="1"
-string_two="2"
+[empty]
+double_quote=""
+single_quote=''
+multi_line="""
+"""
+
+[zero]
+double_quote="0"
+single_quote='0'
+multi_line="""
+0"""
+
+[one]
+double_quote="1"
+single_quote='1'
+multi_line="""
+1"""
+
+[two]
+double_quote="2"
+single_quote='2'
+multi_line="""
+2"""
