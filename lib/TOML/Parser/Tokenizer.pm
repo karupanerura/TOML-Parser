@@ -162,7 +162,7 @@ sub _tokenize_value {
         return [TOKEN_BOOLEAN, $1];
     }
     elsif (/\G$grammar_regexp->{value}->{mlstring}/mgc) {
-        warn "[TOKEN] BOOLEAN: $1" if DEBUG;
+        warn "[TOKEN] MULTI LINE STRING: $1" if DEBUG;
         return (
             [TOKEN_MULTI_LINE_STRING_BEGIN],
             $class->_extract_multi_line_string($1),
