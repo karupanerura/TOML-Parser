@@ -5,10 +5,12 @@ TOML::Parser - simple toml parser
 
 # SYNOPSIS
 
-    use TOML::Parser;
+```perl
+use TOML::Parser;
 
-    my $parser = TOML::Parser->new;
-    my $data   = $parser->parse($toml);
+my $parser = TOML::Parser->new;
+my $data   = $parser->parse($toml);
+```
 
 # DESCRIPTION
 
@@ -25,10 +27,12 @@ The v0.4.0 specification is supported.
 
     Creates a new TOML::Parser instance.
 
-        use TOML::Parser;
+    ```perl
+    use TOML::Parser;
 
-        # create new parser
-        my $parser = TOML::Parser->new();
+    # create new parser
+    my $parser = TOML::Parser->new();
+    ```
 
     Arguments can be:
 
@@ -37,44 +41,50 @@ The v0.4.0 specification is supported.
         If use it, You can replace inflate `datetime` process.
         The subroutine of default is `identity`. `e.g.) sub { $_[0] }`
 
-            use TOML::Parser;
-            use DateTime;
-            use DateTime::Format::ISO8601;
+        ```perl
+        use TOML::Parser;
+        use DateTime;
+        use DateTime::Format::ISO8601;
 
-            # create new parser
-            my $parser = TOML::Parser->new(
-                inflate_datetime => sub {
-                    my $dt = shift;
-                    return DateTime::Format::ISO8601->parse_datetime($dt);
-                },
-            );
+        # create new parser
+        my $parser = TOML::Parser->new(
+            inflate_datetime => sub {
+                my $dt = shift;
+                return DateTime::Format::ISO8601->parse_datetime($dt);
+            },
+        );
+        ```
 
     - `inflate_boolean`
 
         If use it, You can replace inflate boolean process.
         The return value of default subroutine is `Types::Serialiser::true` or `Types::Serialiser::false`.
 
-            use TOML::Parser;
+        ```perl
+        use TOML::Parser;
 
-            # create new parser
-            my $parser = TOML::Parser->new(
-                inflate_boolean => sub {
-                    my $boolean = shift;
-                    return $boolean eq 'true' ? 1 : 0;
-                },
-            );
+        # create new parser
+        my $parser = TOML::Parser->new(
+            inflate_boolean => sub {
+                my $boolean = shift;
+                return $boolean eq 'true' ? 1 : 0;
+            },
+        );
+        ```
 
     - `strict_mode`
 
         TOML::Parser is using a more flexible rule for compatibility with old TOML of default.
         If make this option true value, You can parse a toml with strict rule.
 
-            use TOML::Parser;
+        ```perl
+        use TOML::Parser;
 
-            # create new parser
-            my $parser = TOML::Parser->new(
-                strict_mode => 1
-            );
+        # create new parser
+        my $parser = TOML::Parser->new(
+            strict_mode => 1
+        );
+        ```
 
 - my $data = $parser->parse\_file($path)
 - my $data = $parser->parse\_fh($fh)
