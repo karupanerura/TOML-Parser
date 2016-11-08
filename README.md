@@ -110,3 +110,5 @@ karupanerura <karupa@cpan.org>
 # CONTRIBUTOR
 
 Olivier Mengué <dolmen@cpan.org>
+yowcow <yowcow@cpan.org>
+Syohei YOSHIDA <syohex@gmail.com>
