@@ -95,8 +95,8 @@ it under the same terms as Perl itself.
 
 # AUTHOR
 
-karupanerura &lt;karupa@cpan.org>
+karupanerura <karupa@cpan.org>
 
 # CONTRIBUTOR
 
-Olivier Mengué &lt;dolmen@cpan.org>
+Olivier Mengué <dolmen@cpan.org>

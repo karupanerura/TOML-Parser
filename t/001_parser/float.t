@@ -3,7 +3,8 @@ use warnings;
 use utf8;
 
 use Test::More tests => 2;
-use t::Util;
+use Test::Deep;
+use Test::Deep::Fuzzy;
 use Storable 2.38 qw/thaw/;
 use MIME::Base64;
 
@@ -18,11 +19,15 @@ AAAABGtleTcIgQIAAAAEa2V5MQoFNWUrMjICAAAABGtleTQKBS0wLjAyAgAAAARrZXk2
 
 __EXPECTED__
 
+for my $key (keys %$expected) {
+    $expected->{$key} = is_fuzzy_num($expected->{$key}, 0.000001);
+}
+
 for my $strict_mode (0, 1) {
     my $parser = TOML::Parser->new(strict_mode => $strict_mode);
     my $data   = $parser->parse($toml);
     note explain { data => $data, expected => $expected } if $ENV{AUTHOR_TESTING};
-    cmp_fuzzy_deeply $data => $expected, "t/toml/float.toml: strict_mode: $strict_mode";
+    cmp_deeply $data => $expected, "t/toml/float.toml: strict_mode: $strict_mode";
 }
 
 __DATA__

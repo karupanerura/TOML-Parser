@@ -3,7 +3,6 @@ use warnings;
 use utf8;
 
 use Test::More tests => 2;
-use t::Util;
 use Storable 2.38 qw/thaw/;
 use MIME::Base64;
 
@@ -26,7 +25,7 @@ __EXPECTED__
 my $parser = TOML::Parser->new(inflate_datetime => \&inflate_datetime);
 my $data   = $parser->parse($toml);
 note explain { data => $data, expected => $expected } if $ENV{AUTHOR_TESTING};
-cmp_fuzzy_deeply $data => $expected, 't/toml/hard_example.toml: strict_mode: 0';
+is_deeply $data => $expected, 't/toml/hard_example.toml: strict_mode: 0';
 
 eval { TOML::Parser->new(strict_mode => 1)->parse($toml) };
 like $@, qr{\ASyntax Error: line:16}m, 't/toml/hard_example.toml: strict_mode: 1';
