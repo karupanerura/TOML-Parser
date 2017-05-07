@@ -176,6 +176,7 @@ sub _parse_value_token {
         my %data;
         while (my $token = shift @TOKENS) {
             last if $token->[0] eq TOKEN_INLINE_TABLE_END;
+            next if $token->[0] eq TOKEN_COMMENT;
             my ($key, $value) = $self->_parse_key_and_value($token);
             die "Duplicate key. key:$key" if exists $data{$key};
             $data{$key} = $value;
@@ -188,7 +189,8 @@ sub _parse_value_token {
         my $last_token;
         while (my $token = shift @TOKENS) {
             last if $token->[0] eq TOKEN_ARRAY_END;
-            if ($self->{strict_mode} && $token->[0] ne TOKEN_COMMENT) {
+            next if $token->[0] eq TOKEN_COMMENT;
+            if ($self->{strict_mode}) {
                 die "Unexpected token: $token->[0]" if defined $last_token && $token->[0] ne $last_token->[0];
             }
             push @data => $self->_parse_value_token($token);

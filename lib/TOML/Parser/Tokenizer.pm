@@ -292,17 +292,34 @@ sub _extract_multi_line_string {
 
 sub _tokenize_inline_table {
     my $class = shift;
-    my $grammar_regexp = $class->grammar_regexp()->{value}->{inline};
+
+    my $common_grammar_regexp = $class->grammar_regexp();
+    my $grammar_regexp = $common_grammar_regexp->{value}->{inline};
+
     warn "[CALL] _tokenize_inline_table" if DEBUG;
     return if /\G(?:$grammar_regexp->{sep})?$grammar_regexp->{end}/smgc;
 
-    my @tokens = $class->_tokenize_key_and_value();
-    while (/\G$grammar_regexp->{sep}/smgc || !/\G$grammar_regexp->{end}/mgc) {
-        last if /\G$grammar_regexp->{end}/mgc;
+    my @tokens;
+    while (1) {
         warn "[CONTEXT] _tokenize_inline_table [loop]" if DEBUG;
+
         $class->_skip_whitespace();
-        push @tokens => $class->_tokenize_key_and_value();
-        $class->_skip_whitespace();
+        if (/\G$common_grammar_regexp->{comment}/mgc) {
+            warn "[TOKEN] COMMENT: $1" if DEBUG;
+            push @tokens => [TOKEN_COMMENT, $1 || ''];
+        }
+        elsif (/\G$grammar_regexp->{sep}/smgc) {
+            next;
+        }
+        elsif (/\G$grammar_regexp->{end}/mgc) {
+            last;
+        }
+        elsif (my @t = $class->_tokenize_key_and_value()) {
+            push @tokens => @t;
+        }
+        else {
+            $class->_syntax_error();
+        }
     }
 
     return @tokens;
@@ -310,17 +327,34 @@ sub _tokenize_inline_table {
 
 sub _tokenize_array {
     my $class = shift;
-    my $grammar_regexp = $class->grammar_regexp()->{value}->{array};
+
+    my $common_grammar_regexp = $class->grammar_regexp();
+    my $grammar_regexp = $common_grammar_regexp->{value}->{array};
+
     warn "[CALL] _tokenize_array" if DEBUG;
     return if /\G(?:$grammar_regexp->{sep})?$grammar_regexp->{end}/smgc;
 
-    my @tokens = $class->_tokenize_value();
-    while (/\G$grammar_regexp->{sep}/smgc || !/\G$grammar_regexp->{end}/mgc) {
-        last if /\G$grammar_regexp->{end}/mgc;
-        warn "[CONTEXT] _tokenize_array [loop]" if DEBUG;
+    my @tokens;
+    while (1) {
+        warn "[CONTEXT] _tokenize_inline_table [loop]" if DEBUG;
+
         $class->_skip_whitespace();
-        push @tokens => $class->_tokenize_value();
-        $class->_skip_whitespace();
+        if (/\G$common_grammar_regexp->{comment}/mgc) {
+            warn "[TOKEN] COMMENT: $1" if DEBUG;
+            push @tokens => [TOKEN_COMMENT, $1 || ''];
+        }
+        elsif (/\G$grammar_regexp->{sep}/smgc) {
+            next;
+        }
+        elsif (/\G$grammar_regexp->{end}/mgc) {
+            last;
+        }
+        elsif (my @t = $class->_tokenize_value()) {
+            push @tokens => @t;
+        }
+        else {
+            $class->_syntax_error();
+        }
     }
 
     return @tokens;
