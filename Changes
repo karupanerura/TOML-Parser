@@ -2,6 +2,11 @@ Revision history for Perl extension TOML-Parser
 
 {{$NEXT}}
 
+0.10 2017-05-08T06:08:45Z
+
+   - [INTERNAL] give up to support perl 5.8
+   - [FIXED] wrong inline-table/array syntax is allowed on 0.09
+
 0.09 2017-05-07T13:50:25Z
 
    - [FIXED] comment parsing bug in inline table and array

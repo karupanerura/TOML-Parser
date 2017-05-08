@@ -4,7 +4,7 @@ use strict;
 use warnings;
 use Encode;
 
-our $VERSION = "0.09";
+our $VERSION = "0.10";
 
 use TOML::Parser::Tokenizer qw/:constant/;
 use TOML::Parser::Tokenizer::Strict;
