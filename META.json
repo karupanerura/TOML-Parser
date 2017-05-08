@@ -49,7 +49,7 @@
             "Exporter" : "5.57",
             "Types::Serialiser" : "0",
             "parent" : "0",
-            "perl" : "5.008005"
+            "perl" : "5.010000"
          }
       },
       "test" : {

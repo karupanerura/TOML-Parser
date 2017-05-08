@@ -1,5 +1,5 @@
 package TOML::Parser::Tokenizer::Strict;
-use 5.008005;
+use 5.010000;
 use strict;
 use warnings;
 

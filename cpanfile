@@ -2,7 +2,7 @@ requires 'Encode';
 requires 'Exporter', '5.57';
 requires 'Types::Serialiser';
 requires 'parent';
-requires 'perl', '5.008005';
+requires 'perl', '5.010000';
 
 on configure => sub {
     requires 'Module::Build::Tiny', '0.035';
