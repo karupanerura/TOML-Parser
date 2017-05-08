@@ -299,6 +299,8 @@ sub _tokenize_inline_table {
     warn "[CALL] _tokenize_inline_table" if DEBUG;
     return if /\G(?:$grammar_regexp->{sep})?$grammar_regexp->{end}/smgc;
 
+    my $need_sep = 0;
+
     my @tokens;
     while (1) {
         warn "[CONTEXT] _tokenize_inline_table [loop]" if DEBUG;
@@ -307,19 +309,27 @@ sub _tokenize_inline_table {
         if (/\G$common_grammar_regexp->{comment}/mgc) {
             warn "[TOKEN] COMMENT: $1" if DEBUG;
             push @tokens => [TOKEN_COMMENT, $1 || ''];
-        }
-        elsif (/\G$grammar_regexp->{sep}/smgc) {
             next;
         }
         elsif (/\G$grammar_regexp->{end}/mgc) {
             last;
         }
-        elsif (my @t = $class->_tokenize_key_and_value()) {
-            push @tokens => @t;
+
+        if ($need_sep) {
+            if (/\G$grammar_regexp->{sep}/smgc) {
+                $need_sep = 0;
+                next;
+            }
         }
         else {
-            $class->_syntax_error();
+            if (my @t = $class->_tokenize_key_and_value()) {
+                push @tokens => @t;
+                $need_sep = 1;
+                next;
+            }
         }
+
+        $class->_syntax_error();
     }
 
     return @tokens;
@@ -334,6 +344,8 @@ sub _tokenize_array {
     warn "[CALL] _tokenize_array" if DEBUG;
     return if /\G(?:$grammar_regexp->{sep})?$grammar_regexp->{end}/smgc;
 
+    my $need_sep = 0;
+
     my @tokens;
     while (1) {
         warn "[CONTEXT] _tokenize_inline_table [loop]" if DEBUG;
@@ -342,19 +354,27 @@ sub _tokenize_array {
         if (/\G$common_grammar_regexp->{comment}/mgc) {
             warn "[TOKEN] COMMENT: $1" if DEBUG;
             push @tokens => [TOKEN_COMMENT, $1 || ''];
-        }
-        elsif (/\G$grammar_regexp->{sep}/smgc) {
             next;
         }
         elsif (/\G$grammar_regexp->{end}/mgc) {
             last;
         }
-        elsif (my @t = $class->_tokenize_value()) {
-            push @tokens => @t;
+
+        if ($need_sep) {
+            if (/\G$grammar_regexp->{sep}/smgc) {
+                $need_sep = 0;
+                next;
+            }
         }
         else {
-            $class->_syntax_error();
+            if (my @t = $class->_tokenize_value()) {
+                push @tokens => @t;
+                $need_sep = 1;
+                next;
+            }
         }
+
+        $class->_syntax_error();
     }
 
     return @tokens;
