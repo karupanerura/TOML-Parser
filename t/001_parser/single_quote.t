@@ -11,8 +11,9 @@ use TOML::Parser;
 my $toml = do { local $/; <DATA> };
 
 my $expected = thaw(decode_base64(<<'__EXPECTED__'));
-BQoZAAAAAAQXB2ZvbyJiYXICAAAAB3N0cmluZzMXBmZvb2JhcgIAAAAHc3RyaW5nMRcGYmFyYmF6
-AgAAAAdzdHJpbmcyFwdiYXInYmF6AgAAAAdzdHJpbmc0
+BQoZAAAAAAUXB2JhcidiYXoCAAAAB3N0cmluZzQXBmJhcmJhegIAAAAHc3RyaW5nMhcZQzpcVXNl
+cnNcbm9kZWpzXHRlbXBsYXRlcwIAAAAHc3RyaW5nNRcHZm9vImJhcgIAAAAHc3RyaW5nMxcGZm9v
+YmFyAgAAAAdzdHJpbmcx
 
 __EXPECTED__
 
@@ -28,3 +29,4 @@ string1='foobar'
 string2="barbaz"
 string3='foo"bar'
 string4="bar'baz"
+string5='C:\Users\nodejs\templates'

@@ -145,7 +145,7 @@ sub _parse_value_token {
     my $self  = shift;
     my $token = shift;
 
-    my ($type, $val) = @$token;
+    my ($type, $val, @args) = @$token;
     if ($type eq TOKEN_COMMENT) {
         return; # pass through
     }
@@ -160,9 +160,11 @@ sub _parse_value_token {
         return $self->inflate_datetime($val);
     }
     elsif ($type eq TOKEN_STRING) {
-        return unescape_str($val);
+        my ($is_raw) = @args;
+        return $is_raw ? $val : unescape_str($val);
     }
     elsif ($type eq TOKEN_MULTI_LINE_STRING_BEGIN) {
+        my ($is_raw) = @args;
         my $value = $self->_parse_value_token(shift @TOKENS);
         $value =~ s/\A(?:\r\n|[\r\n])//msg;
         $value =~ s/\\\s+//msg;
