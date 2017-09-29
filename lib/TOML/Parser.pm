@@ -164,7 +164,7 @@ sub _parse_value_token {
     }
     elsif ($type eq TOKEN_MULTI_LINE_STRING_BEGIN) {
         my $value = $self->_parse_value_token(shift @TOKENS);
-        $value =~ s/\A\s+//msg;
+        $value =~ s/\A(?:\r\n|[\r\n])//msg;
         $value =~ s/\\\s+//msg;
         if (my $token = shift @TOKENS) {
             my ($type) = @$token;

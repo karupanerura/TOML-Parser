@@ -11,13 +11,14 @@ use TOML::Parser;
 my $toml = do { local $/; <DATA> };
 
 my $expected = thaw(decode_base64(<<'__EXPECTED__'));
-BQoZAAAAAAYXHEkgW2R3XW9uJ3QgbmVlZCBcZHsyfSBhcHBsZXMCAAAABnJlZ2V4MhcsVGhlIHF1
-aWNrIGJyb3duIGZveCBqdW1wcyBvdmVyIHRoZSBsYXp5IGRvZy4CAAAABGtleTIXHlJvc2VzIGFy
-ZSByZWQKVmlvbGV0cyBhcmUgYmx1ZQIAAAAEa2V5MBdfVGhlIGZpcnN0IG5ld2xpbmUgaXMKdHJp
-bW1lZCBpbiByYXcgc3RyaW5ncy4KICAgQWxsIG90aGVyIHdoaXRlc3BhY2UKICAgICAgaXMgcHJl
-c2VydmVkLgogICAgICACAAAABWxpbmVzFyxUaGUgcXVpY2sgYnJvd24gZm94IGp1bXBzIG92ZXIg
-dGhlIGxhenkgZG9nLgIAAAAEa2V5MRcsVGhlIHF1aWNrIGJyb3duIGZveCBqdW1wcyBvdmVyIHRo
-ZSBsYXp5IGRvZy4CAAAABGtleTM=
+BQoZAAAAAAcXLFRoZSBxdWljayBicm93biBmb3gganVtcHMgb3ZlciB0aGUgbGF6eSBkb2cuAgAA
+AARrZXkxFxxJIFtkd11vbid0IG5lZWQgXGR7Mn0gYXBwbGVzAgAAAAZyZWdleDIXLFRoZSBxdWlj
+ayBicm93biBmb3gganVtcHMgb3ZlciB0aGUgbGF6eSBkb2cuAgAAAARrZXkyF19UaGUgZmlyc3Qg
+bmV3bGluZSBpcwp0cmltbWVkIGluIHJhdyBzdHJpbmdzLgogICBBbGwgb3RoZXIgd2hpdGVzcGFj
+ZQogICAgICBpcyBwcmVzZXJ2ZWQuCiAgICAgIAIAAAAFbGluZXMXHSAgICAKICAgIFNQQUNFUzEK
+ICAgIFNQQUNFUzIKAgAAAAdpc3N1ZTE0FyxUaGUgcXVpY2sgYnJvd24gZm94IGp1bXBzIG92ZXIg
+dGhlIGxhenkgZG9nLgIAAAAEa2V5MxceUm9zZXMgYXJlIHJlZApWaW9sZXRzIGFyZSBibHVlAgAA
+AARrZXkw
 
 __EXPECTED__
 
@@ -56,3 +57,9 @@ trimmed in raw strings.
    All other whitespace
       is preserved.
       '''
+
+issue14 = '''
+    
+    SPACES1
+    SPACES2
+'''

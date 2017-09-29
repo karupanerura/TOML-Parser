@@ -25,3 +25,9 @@ trimmed in raw strings.
    All other whitespace
       is preserved.
       '''
+
+issue14 = '''
+    
+    SPACES1
+    SPACES2
+'''
