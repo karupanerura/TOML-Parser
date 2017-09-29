@@ -394,14 +394,15 @@ sub _error {
     my ($class, $msg) = @_;
 
     my $src   = $_;
+    my $curr  = pos || 0;
     my $line  = 1;
     my $start = pos $src || 0;
-    while ($src =~ /$/smgco and pos $src <= pos) {
+    while ($src =~ /$/smgco and pos $src <= $curr) {
         $start = pos $src;
         $line++;
     }
     my $end = pos $src;
-    my $len = pos() - $start;
+    my $len = $curr - $start;
     $len-- if $len > 0;
 
     my $trace = join "\n",

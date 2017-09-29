@@ -1,7 +1,14 @@
 use strict;
-use Test::More tests => 17;
+use Test::More tests => 18;
 
 use TOML::Parser;
+
+eval {
+    TOML::Parser->new->parse(<<'...');
+foo
+...
+};
+like $@, qr/\ASyntax Error: line:1/m, 'detect syntax error' or diag $@;
 
 eval {
     TOML::Parser->new->parse(<<'...');
