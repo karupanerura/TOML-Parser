@@ -2,6 +2,12 @@ Revision history for Perl extension TOML-Parser
 
 {{$NEXT}}
 
+0.90 2017-10-01T03:02:09Z
+
+   - [INCOMPATIBLE] Fix wrong multi-line string implementation to specification.
+   - [INCOMPATIBLE] Distinguishes single-quote and double-quote
+   - [FIXED] "Use of uninitialized value" in error
+
 0.10 2017-05-08T06:08:45Z
 
    - [INTERNAL] give up to support perl 5.8

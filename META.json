@@ -4,13 +4,13 @@
       "karupanerura <karupa@cpan.org>"
    ],
    "dynamic_config" : 0,
-   "generated_by" : "Minilla/v3.0.10, CPAN::Meta::Converter version 2.150010",
+   "generated_by" : "Minilla/v3.0.13, CPAN::Meta::Converter version 2.150010",
    "license" : [
       "perl_5"
    ],
    "meta-spec" : {
       "url" : "http://search.cpan.org/perldoc?CPAN::Meta::Spec",
-      "version" : "2"
+      "version" : 2
    },
    "name" : "TOML-Parser",
    "no_index" : {
@@ -74,13 +74,13 @@
          "web" : "https://github.com/karupanerura/TOML-Parser"
       }
    },
-   "version" : "0.10",
+   "version" : "0.90",
    "x_authority" : "cpan:KARUPA",
    "x_contributors" : [
       "Olivier Mengué <dolmen@cpan.org>",
+      "Syohei YOSHIDA <syohex@gmail.com>",
       "karupanerura <karupanerura@users.noreply.github.com>",
-      "yowcow <yowcow@cpan.org>",
-      "Syohei YOSHIDA <syohex@gmail.com>"
+      "yowcow <yowcow@cpan.org>"
    ],
-   "x_serialization_backend" : "JSON::PP version 2.27400"
+   "x_serialization_backend" : "JSON::PP version 2.94"
 }
