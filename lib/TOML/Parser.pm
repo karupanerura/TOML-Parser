@@ -48,17 +48,10 @@ sub parse {
     local $ROOT    = {};
     local $CONTEXT = $ROOT;
     local @TOKENS  = $self->_tokenizer_class->tokenize($src);
-    return $self->_parse_tokens();
-}
-
-sub _parse_tokens {
-    my $self = shift;
-
     while (my $token = shift @TOKENS) {
         $self->_parse_token($token);
     }
-
-    return $CONTEXT;
+    return $ROOT;
 }
 
 sub _parse_token {
@@ -102,7 +95,7 @@ sub _parse_table {
     my ($self, $keys) = @_;
     my @keys = @$keys;
 
-    local $CONTEXT = $ROOT;
+    $CONTEXT = $ROOT;
     for my $k (@keys) {
         if (exists $CONTEXT->{$k}) {
             $CONTEXT = ref $CONTEXT->{$k} eq 'ARRAY' ? $CONTEXT->{$k}->[-1] :
@@ -113,8 +106,6 @@ sub _parse_table {
             $CONTEXT = $CONTEXT->{$k} ||= +{};
         }
     }
-
-    $self->_parse_tokens();
 }
 
 sub _parse_array_of_table {
@@ -122,7 +113,7 @@ sub _parse_array_of_table {
     my @keys     = @$keys;
     my $last_key = pop @keys;
 
-    local $CONTEXT = $ROOT;
+    $CONTEXT = $ROOT;
     for my $k (@keys) {
         if (exists $CONTEXT->{$k}) {
             $CONTEXT = ref $CONTEXT->{$k} eq 'ARRAY' ? $CONTEXT->{$k}->[-1] :
@@ -137,8 +128,6 @@ sub _parse_array_of_table {
     $CONTEXT->{$last_key} = [] unless exists $CONTEXT->{$last_key};
     die "invalid structure. @{[ join '.', @keys ]} cannot be `Array of table`" unless ref $CONTEXT->{$last_key} eq 'ARRAY';
     push @{ $CONTEXT->{$last_key} } => $CONTEXT = {};
-
-    $self->_parse_tokens();
 }
 
 sub _parse_value_token {
