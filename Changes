@@ -2,6 +2,10 @@ Revision history for Perl extension TOML-Parser
 
 {{$NEXT}}
 
+0.90_01 2017-11-05T09:39:39Z
+
+   - Less recursion for parsing (thanks for bhmevik)
+
 0.90 2017-10-01T03:02:09Z
 
    - [INCOMPATIBLE] Fix wrong multi-line string implementation to specification.
