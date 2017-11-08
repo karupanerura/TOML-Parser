@@ -2,6 +2,10 @@ Revision history for Perl extension TOML-Parser
 
 {{$NEXT}}
 
+0.91 2017-11-08T13:23:39Z
+
+   - Same as 0.90_01
+
 0.90_01 2017-11-05T09:39:39Z
 
    - Less recursion for parsing (thanks for bhmevik)
